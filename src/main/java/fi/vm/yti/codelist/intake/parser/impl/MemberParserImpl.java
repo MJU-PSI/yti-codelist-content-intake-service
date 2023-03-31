@@ -28,6 +28,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +41,7 @@ import fi.vm.yti.codelist.common.dto.ErrorModel;
 import fi.vm.yti.codelist.common.dto.MemberDTO;
 import fi.vm.yti.codelist.common.dto.MemberValueDTO;
 import fi.vm.yti.codelist.common.dto.ValueTypeDTO;
+import fi.vm.yti.codelist.intake.configuration.UriProperties;
 import fi.vm.yti.codelist.intake.exception.CsvParsingException;
 import fi.vm.yti.codelist.intake.exception.DuplicateSequenceIdInFileUploadException;
 import fi.vm.yti.codelist.intake.exception.ExcelParsingException;
@@ -58,6 +60,9 @@ import static fi.vm.yti.codelist.intake.util.ValidationUtils.validateStringAgain
 public class MemberParserImpl extends AbstractBaseParser implements MemberParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(MemberParserImpl.class);
+
+    @Autowired
+    UriProperties uriProperties;
 
     public MemberDTO parseMemberFromJson(final String jsonPayload) {
         final ObjectMapper mapper = createObjectMapper();
@@ -333,7 +338,7 @@ public class MemberParserImpl extends AbstractBaseParser implements MemberParser
         final CodeDTO code = new CodeDTO();
         if (identifier == null || identifier.isEmpty()) {
             throw new MissingRowValueCodeValueException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_USER_ROW_MISSING_CODE, rowIdentifier));
-        } else if (identifier.startsWith("http://uri.suomi.fi/codelist/")) {
+        } else if (identifier.startsWith(uriProperties.getUriAddress())) {
             code.setUri(identifier);
         } else {
             code.setCodeValue(identifier);
@@ -354,7 +359,7 @@ public class MemberParserImpl extends AbstractBaseParser implements MemberParser
     private MemberDTO createMemberWithCodeAndCodeValue(final String identifier) {
         final MemberDTO member = new MemberDTO();
         final CodeDTO refCode = new CodeDTO();
-        if (identifier.startsWith("http://uri.suomi.fi/codelist/")) {
+        if (identifier.startsWith(uriProperties.getUriAddress())) {
             refCode.setUri(identifier);
         } else {
             refCode.setCodeValue(identifier);

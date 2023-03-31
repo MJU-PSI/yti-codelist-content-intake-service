@@ -18,20 +18,25 @@ import fi.vm.yti.codelist.intake.configuration.GroupManagementProperties;
 import fi.vm.yti.codelist.intake.configuration.MessagingProperties;
 import fi.vm.yti.codelist.intake.configuration.PublicApiServiceProperties;
 import fi.vm.yti.codelist.intake.configuration.TerminologyProperties;
-import fi.vm.yti.codelist.intake.configuration.UriSuomiProperties;
+import fi.vm.yti.codelist.intake.configuration.UriProperties;
 import fi.vm.yti.codelist.intake.model.Code;
 import fi.vm.yti.codelist.intake.model.CodeRegistry;
 import fi.vm.yti.codelist.intake.model.CodeScheme;
 import fi.vm.yti.codelist.intake.model.Extension;
 import fi.vm.yti.codelist.intake.model.Member;
+import fi.vm.yti.codelist.intake.model.PropertyType;
+import fi.vm.yti.codelist.intake.model.ValueType;
+
 import static fi.vm.yti.codelist.common.constants.ApiConstants.*;
 import static fi.vm.yti.codelist.intake.util.EncodingUtils.urlEncodeCodeValue;
 
 @Component
 public class ApiUtils {
 
+    private final String DEFAULT_URI_HOST = "uri.suomi.fi";
+
     private final PublicApiServiceProperties publicApiServiceProperties;
-    private final UriSuomiProperties uriSuomiProperties;
+    private final UriProperties uriProperties;
     private final ContentIntakeServiceProperties contentIntakeServiceProperties;
     private final GroupManagementProperties groupManagementProperties;
     private final TerminologyProperties terminologyProperties;
@@ -46,12 +51,12 @@ public class ApiUtils {
                     final GroupManagementProperties groupManagementProperties,
                     final TerminologyProperties terminologyProperties,
                     final DataModelProperties dataModelProperties,
-                    final UriSuomiProperties uriSuomiProperties,
+                    final UriProperties uriProperties,
                     final CommentsProperties commentsProperties,
                     final FrontendProperties frontendProperties,
                     final MessagingProperties messagingProperties) {
         this.publicApiServiceProperties = publicApiServiceProperties;
-        this.uriSuomiProperties = uriSuomiProperties;
+        this.uriProperties = uriProperties;
         this.contentIntakeServiceProperties = contentIntakeServiceProperties;
         this.groupManagementProperties = groupManagementProperties;
         this.terminologyProperties = terminologyProperties;
@@ -86,13 +91,13 @@ public class ApiUtils {
     }
 
     private String createResourceUri(final String resourcePath) {
-        final String port = uriSuomiProperties.getPort();
+        final String port = uriProperties.getPort();
         final StringBuilder builder = new StringBuilder();
-        builder.append(uriSuomiProperties.getScheme());
+        builder.append(uriProperties.getScheme());
         builder.append("://");
-        builder.append(uriSuomiProperties.getHost());
+        builder.append(uriProperties.getHost());
         appendPortToUrlIfNotEmpty(port, builder);
-        builder.append(uriSuomiProperties.getContextPath());
+        builder.append(uriProperties.getContextPath());
         builder.append("/");
         if (resourcePath != null) {
             builder.append(resourcePath);
@@ -227,4 +232,12 @@ public class ApiUtils {
             builder.append(port);
         }
     }
+
+    public String replaceDomainInUrl(final ValueType valueType){
+       return valueType.getUri().replace(DEFAULT_URI_HOST, uriProperties.getHost()); 
+    }
+
+    public String replaceDomainInUrl(final PropertyType propertyType){
+        return propertyType.getUri().replace(DEFAULT_URI_HOST, uriProperties.getHost()); 
+     }
 }

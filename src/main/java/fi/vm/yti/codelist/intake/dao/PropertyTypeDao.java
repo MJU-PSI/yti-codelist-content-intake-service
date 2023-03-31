@@ -8,6 +8,16 @@ import fi.vm.yti.codelist.intake.model.PropertyType;
 
 public interface PropertyTypeDao {
 
+    void save(final PropertyType propertyType);
+
+    void save(final PropertyType propertyType,
+              final boolean logChange);
+
+    void save(final Set<PropertyType> propertyTypes);
+
+    void save(final Set<PropertyType> propertyType,
+              final boolean logChange);
+
     PropertyType findByContextAndLocalName(final String context,
                                            final String localName);
 

@@ -114,4 +114,33 @@ public class ValueTypeDaoImpl extends AbstractDao implements ValueTypeDao {
         valueType.setPrefLabel(validateLanguagesForLocalizable(fromValueType.getPrefLabel()));
         return valueType;
     }
+
+    @Transactional
+    public void save(final ValueType valueType) {
+        save(valueType, true);
+    }
+
+    @Transactional
+    public void save(final ValueType valueType,
+                     final boolean logChange) {
+        valueTypeRepository.save(valueType);
+        if (logChange) {
+            entityChangeLogger.logValueTypeChange(valueType);
+        }
+    }
+
+    @Transactional
+    public void save(final Set<ValueType> valueTypes,
+                     final boolean logChange) {
+        valueTypeRepository.saveAll(valueTypes);
+        if (logChange) {
+            entityChangeLogger.logValueTypeChange(valueTypes);
+        }
+    }
+
+    @Transactional
+    public void save(final Set<ValueType> valueTypes) {
+        save(valueTypes, true);
+    }
+
 }

@@ -93,6 +93,17 @@ public class EntityChangeLoggerImpl implements EntityChangeLogger {
     }
 
     @Transactional
+    public void logPropertyTypeChange(final Set<PropertyType> propertyTypes) {
+        final Commit commit = createCommit();
+        propertyTypes.forEach(propertyType -> {
+            entityPayloadLogger.logPropertyType(propertyType);
+            final EditedEntity editedEntity = new EditedEntity(commit);
+            editedEntity.setPropertyType(propertyType);
+            editedEntityRepository.save(editedEntity);
+        });
+    }
+    
+    @Transactional
     public void logPropertyTypeChange(final PropertyType propertyType) {
         entityPayloadLogger.logPropertyType(propertyType);
         final EditedEntity editedEntity = new EditedEntity(createCommit());
@@ -127,6 +138,17 @@ public class EntityChangeLoggerImpl implements EntityChangeLogger {
             editedEntities.add(editedEntity);
         });
         editedEntityRepository.saveAll(editedEntities);
+    }
+
+    @Transactional
+    public void logValueTypeChange(final Set<ValueType> valueTypes) {
+        final Commit commit = createCommit();
+        valueTypes.forEach(valueType -> {
+            entityPayloadLogger.logValueType(valueType);
+            final EditedEntity editedEntity = new EditedEntity(commit);
+            editedEntity.setValueType(valueType);
+            editedEntityRepository.save(editedEntity);
+        });
     }
 
     @Transactional

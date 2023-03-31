@@ -25,11 +25,15 @@ public interface EntityChangeLogger {
 
     void logPropertyTypeChange(final PropertyType propertyType);
 
+    void logPropertyTypeChange(final Set<PropertyType> propertyTypes);
+
     void logExtensionChange(final Extension extension);
 
     void logMemberChange(final Member member);
 
     void logMemberChanges(final Set<Member> members);
 
-    void logValueTypeChange(final ValueType member);
+    void logValueTypeChange(final ValueType member); 
+
+    void logValueTypeChange(final Set<ValueType> members); 
 }

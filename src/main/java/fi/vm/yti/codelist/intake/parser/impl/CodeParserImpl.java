@@ -26,6 +26,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import fi.vm.yti.codelist.common.dto.CodeDTO;
 import fi.vm.yti.codelist.common.dto.CodeSchemeDTO;
 import fi.vm.yti.codelist.common.dto.ErrorModel;
+import fi.vm.yti.codelist.intake.configuration.UriProperties;
 import fi.vm.yti.codelist.intake.exception.CsvParsingException;
 import fi.vm.yti.codelist.intake.exception.ExcelParsingException;
 import fi.vm.yti.codelist.intake.exception.JsonParsingException;
@@ -52,6 +54,9 @@ import static fi.vm.yti.codelist.intake.exception.ErrorConstants.*;
 public class CodeParserImpl extends AbstractBaseParser implements CodeParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(CodeParserImpl.class);
+
+    @Autowired
+    UriProperties uriProperties;
 
     @Override
     public Set<CodeDTO> parseCodesFromCsvInputStream(final InputStream inputStream,
@@ -334,7 +339,7 @@ public class CodeParserImpl extends AbstractBaseParser implements CodeParser {
                 subCodeScheme.setId(subCodeSchemeId);
                 return subCodeScheme;
             } catch (final IllegalArgumentException e) {
-                if (subCodeSchemeIdentifier.startsWith("http://uri.suomi.fi/codelist/")) {
+                if (subCodeSchemeIdentifier.startsWith(uriProperties.getUriAddress())) {
                     final CodeSchemeDTO subCodeScheme = new CodeSchemeDTO();
                     subCodeScheme.setUri(subCodeSchemeIdentifier);
                     return subCodeScheme;

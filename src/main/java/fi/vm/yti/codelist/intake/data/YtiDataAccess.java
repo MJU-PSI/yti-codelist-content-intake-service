@@ -27,13 +27,17 @@ import fi.vm.yti.codelist.intake.dao.CodeRegistryDao;
 import fi.vm.yti.codelist.intake.dao.CodeSchemeDao;
 import fi.vm.yti.codelist.intake.dao.ExtensionDao;
 import fi.vm.yti.codelist.intake.dao.MemberDao;
+import fi.vm.yti.codelist.intake.dao.PropertyTypeDao;
+import fi.vm.yti.codelist.intake.dao.ValueTypeDao;
 import fi.vm.yti.codelist.intake.language.LanguageService;
 import fi.vm.yti.codelist.intake.model.Code;
 import fi.vm.yti.codelist.intake.model.CodeRegistry;
 import fi.vm.yti.codelist.intake.model.CodeScheme;
 import fi.vm.yti.codelist.intake.model.Extension;
 import fi.vm.yti.codelist.intake.model.Member;
+import fi.vm.yti.codelist.intake.model.PropertyType;
 import fi.vm.yti.codelist.intake.model.UpdateStatus;
+import fi.vm.yti.codelist.intake.model.ValueType;
 import fi.vm.yti.codelist.intake.service.CodeRegistryService;
 import fi.vm.yti.codelist.intake.service.CodeSchemeService;
 import fi.vm.yti.codelist.intake.service.CodeService;
@@ -64,7 +68,7 @@ public class YtiDataAccess {
     private static final String SERVICE_CLASSIFICATION_P9 = "P9"; // classification = information domain
 
     private static final String DEFAULT_IDENTIFIER = "default";
-    private static final String MIGRATION_URIS_VERSION = "v3";
+    private static final String MIGRATION_URIS_VERSION = "v4";
     private static final String MIGRATION_LANGUAGECODES_VERSION = "v1";
     private static final String PROPERTYTYPE_IDENTIFIER = "v18";
     private static final String VALUETYPE_IDENTIFIER = "v9";
@@ -76,6 +80,8 @@ public class YtiDataAccess {
     private final CodeDao codeDao;
     private final ExtensionDao extensionDao;
     private final MemberDao memberDao;
+    private final ValueTypeDao valueTypeDao;
+    private final PropertyTypeDao propertyTypeDao;
     private final CodeRegistryService codeRegistryService;
     private final CodeSchemeService codeSchemeService;
     private final CodeService codeService;
@@ -94,6 +100,8 @@ public class YtiDataAccess {
                          final CodeDao codeDao,
                          final ExtensionDao extensionDao,
                          final MemberDao memberDao,
+                         final ValueTypeDao valueTypeDao,
+                         final PropertyTypeDao propertyTypeDao,
                          final CodeRegistryService codeRegistryService,
                          final CodeSchemeService codeSchemeService,
                          final CodeService codeService,
@@ -109,6 +117,8 @@ public class YtiDataAccess {
         this.codeDao = codeDao;
         this.extensionDao = extensionDao;
         this.memberDao = memberDao;
+        this.valueTypeDao = valueTypeDao;
+        this.propertyTypeDao = propertyTypeDao;
         this.codeRegistryService = codeRegistryService;
         this.codeSchemeService = codeSchemeService;
         this.codeService = codeService;
@@ -338,6 +348,8 @@ public class YtiDataAccess {
             rewriteCodeUris();
             rewriteExtensionUris();
             rewriteMemberUris();
+            rewriteValueTypeUris();
+            rewritePropertyTypeUris();
             if (updateStatus.getStatus().equals(UpdateManager.UPDATE_RUNNING)) {
                 updateManager.updateSuccessStatus(updateStatus);
             }
@@ -374,6 +386,18 @@ public class YtiDataAccess {
         final Set<Member> members = memberDao.findAll();
         members.forEach(member -> member.setUri(apiUtils.createMemberUri(member)));
         memberDao.save(members, false);
+    }
+
+    private void rewriteValueTypeUris() {
+        final Set<ValueType> valueTypes = valueTypeDao.findAll();
+        valueTypes.forEach(valueType -> valueType.setUri(apiUtils.replaceDomainInUrl(valueType)));
+        valueTypeDao.save(valueTypes);
+    }
+
+    private void rewritePropertyTypeUris() {
+        final Set<PropertyType> propertyTypes = propertyTypeDao.findAll();
+        propertyTypes.forEach(propertyType -> propertyType.setUri(apiUtils.replaceDomainInUrl(propertyType)));
+        propertyTypeDao.save(propertyTypes);
     }
 
     private void classifyServiceClassification() {

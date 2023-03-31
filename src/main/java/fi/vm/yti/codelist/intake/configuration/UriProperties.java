@@ -6,10 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-@ConfigurationProperties("urisuomi")
+@ConfigurationProperties("uri")
 @Component
 @Validated
-public class UriSuomiProperties {
+public class UriProperties {
 
     @NotNull
     private String host;
@@ -54,7 +54,7 @@ public class UriSuomiProperties {
         this.contextPath = contextPath;
     }
 
-    public String getUriSuomiAddress() {
+    public String getUriAddress() {
         return scheme + "://" + host + contextPath;
     }
 }

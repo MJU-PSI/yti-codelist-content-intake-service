@@ -50,9 +50,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
         title = "YTI Codelist Service - Content Intake Service",
         termsOfService = "https://opensource.org/licenses/EUPL-1.1",
         contact = @Contact(
-            name = "Code List Service by the Digital and Population Data Services Agency",
-            url = "https://yhteentoimiva.suomi.fi/",
-            email = "yhteentoimivuus@dvv.fi"
+            name = "Code List Service by the Digital and Population Data Services Agency"
         ),
         license = @License(
             name = "EUPL-1.2",

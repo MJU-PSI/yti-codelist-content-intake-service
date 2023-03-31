@@ -72,9 +72,9 @@ publicapi:
   port: 9601
   contextPath: /codelist-api
 
-urisuomi:
+uri:
   scheme: http
-  host: uri.suomi.fi
+  host: iow.gora.si
   contextPath: /codelist
 
 session:

@@ -38,6 +38,34 @@ public class PropertyTypeDaoImpl extends AbstractDao implements PropertyTypeDao 
     }
 
     @Transactional
+    public void save(final PropertyType propertyType) {
+        save(propertyType, true);
+    }
+
+    @Transactional
+    public void save(final PropertyType propertyType,
+                     final boolean logChange) {
+        propertyTypeRepository.save(propertyType);
+        if (logChange) {
+            entityChangeLogger.logPropertyTypeChange(propertyType);
+        }
+    }
+
+    @Transactional
+    public void save(final Set<PropertyType> propertyTypes,
+                     final boolean logChange) {
+        propertyTypeRepository.saveAll(propertyTypes);
+        if (logChange) {
+            entityChangeLogger.logPropertyTypeChange(propertyTypes);
+        }
+    }
+
+    @Transactional
+    public void save(final Set<PropertyType> propertyTypes) {
+        save(propertyTypes, true);
+    }
+
+    @Transactional
     public PropertyType findById(final UUID id) {
         return propertyTypeRepository.findById(id);
     }
