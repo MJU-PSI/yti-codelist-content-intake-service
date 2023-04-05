@@ -338,7 +338,7 @@ public class MemberParserImpl extends AbstractBaseParser implements MemberParser
         final CodeDTO code = new CodeDTO();
         if (identifier == null || identifier.isEmpty()) {
             throw new MissingRowValueCodeValueException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_USER_ROW_MISSING_CODE, rowIdentifier));
-        } else if (identifier.startsWith(uriProperties.getUriAddress())) {
+        } else if (identifier.startsWith(uriProperties.getUriHostPathAddress())) {
             code.setUri(identifier);
         } else {
             code.setCodeValue(identifier);
@@ -359,7 +359,7 @@ public class MemberParserImpl extends AbstractBaseParser implements MemberParser
     private MemberDTO createMemberWithCodeAndCodeValue(final String identifier) {
         final MemberDTO member = new MemberDTO();
         final CodeDTO refCode = new CodeDTO();
-        if (identifier.startsWith(uriProperties.getUriAddress())) {
+        if (identifier.startsWith(uriProperties.getUriHostPathAddress())) {
             refCode.setUri(identifier);
         } else {
             refCode.setCodeValue(identifier);

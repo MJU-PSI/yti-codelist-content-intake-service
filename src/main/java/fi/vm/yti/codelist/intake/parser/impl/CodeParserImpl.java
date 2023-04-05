@@ -339,7 +339,7 @@ public class CodeParserImpl extends AbstractBaseParser implements CodeParser {
                 subCodeScheme.setId(subCodeSchemeId);
                 return subCodeScheme;
             } catch (final IllegalArgumentException e) {
-                if (subCodeSchemeIdentifier.startsWith(uriProperties.getUriAddress())) {
+                if (subCodeSchemeIdentifier.startsWith(uriProperties.getUriHostPathAddress())) {
                     final CodeSchemeDTO subCodeScheme = new CodeSchemeDTO();
                     subCodeScheme.setUri(subCodeSchemeIdentifier);
                     return subCodeScheme;

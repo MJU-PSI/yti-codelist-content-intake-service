@@ -299,7 +299,7 @@ public class MemberDaoImpl extends AbstractDao implements MemberDao {
             if (code == null) {
                 throw new NotFoundException();
             }
-            if ((identifier.startsWith(uriProperties.getUriAddress()) && code.getUri().equalsIgnoreCase(identifier)) ||
+            if ((identifier.startsWith(uriProperties.getUriHostPathAddress()) && code.getUri().equalsIgnoreCase(identifier)) ||
                 (code.getCodeValue().equalsIgnoreCase(identifier) && code.getCodeScheme().getId().equals(member.getExtension().getParentCodeScheme().getId()))) {
                 if (found) {
                     throw new YtiCodeListException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_USER_MEMBERS_HAVE_DUPLICATE_CODE_USE_MEMBER_ID));
@@ -371,11 +371,11 @@ public class MemberDaoImpl extends AbstractDao implements MemberDao {
                 if (!found) {
                     throw new YtiCodeListException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_USER_MEMBER_NOT_FOUND_WITH_URI, memberRelationUriIdentifier));
                 }
-            } else if (memberRelationUriIdentifier != null && memberRelationUriIdentifier.startsWith(uriProperties.getUriAddress())) {
+            } else if (memberRelationUriIdentifier != null && memberRelationUriIdentifier.startsWith(uriProperties.getUriHostPathAddress())) {
                 boolean found = false;
                 for (final Member existingMember : existingMembers) {
                     final Code existingMemberCode = existingMember.getCode();
-                    if (memberRelationUriIdentifier.startsWith(uriProperties.getUriAddress()) && existingMemberCode != null && existingMemberCode.getUri().equalsIgnoreCase(memberRelationUriIdentifier)) {
+                    if (memberRelationUriIdentifier.startsWith(uriProperties.getUriHostPathAddress()) && existingMemberCode != null && existingMemberCode.getUri().equalsIgnoreCase(memberRelationUriIdentifier)) {
                         checkDuplicateCode(existingMembers, memberRelationUriIdentifier);
                         linkMembers(member, existingMember, memberRelationUriIdentifier);
                         linkedMembers.add(member);
@@ -541,7 +541,7 @@ public class MemberDaoImpl extends AbstractDao implements MemberDao {
                 final String uriIdentifier = fromMember.getCode().getUri();
                 final String codeValueIdentifier = fromMember.getCode().getCodeValue();
                 if ((fromMember.getCode().getId() != null && fromMember.getCode().getId().equals(code.getId())) ||
-                    (uriIdentifier != null && uriIdentifier.startsWith(uriProperties.getUriAddress()) && code.getUri().equalsIgnoreCase(uriIdentifier)) ||
+                    (uriIdentifier != null && uriIdentifier.startsWith(uriProperties.getUriHostPathAddress()) && code.getUri().equalsIgnoreCase(uriIdentifier)) ||
                     (code.getCodeScheme().getId().equals(extension.getParentCodeScheme().getId()) && code.getCodeValue().equalsIgnoreCase(codeValueIdentifier))) {
                     throw new YtiCodeListException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_USER_CODE_EXTENSION_MULTIPLE_MEMBERS));
                 }

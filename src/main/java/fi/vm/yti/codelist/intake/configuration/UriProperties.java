@@ -47,14 +47,14 @@ public class UriProperties {
     }
 
     public String getContextPath() {
-        return contextPath;
+        return "/" + this.contextPath.replaceAll("^/|/$", "") + "/";
     }
 
     public void setContextPath(final String contextPath) {
         this.contextPath = contextPath;
     }
 
-    public String getUriAddress() {
+    public String getUriHostPathAddress() {
         return scheme + "://" + host + contextPath;
     }
 }
