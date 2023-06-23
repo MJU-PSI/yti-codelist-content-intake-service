@@ -36,7 +36,7 @@ import fi.vm.yti.codelist.intake.model.ExternalReference;
 import fi.vm.yti.codelist.intake.model.Organization;
 import fi.vm.yti.codelist.intake.security.AuthorizationManager;
 import static fi.vm.yti.codelist.intake.exception.ErrorConstants.*;
-import static fi.vm.yti.codelist.intake.parser.impl.AbstractBaseParser.JUPO_REGISTRY;
+import static fi.vm.yti.codelist.intake.parser.impl.AbstractBaseParser.PUBLIC_ADMIN_SERVICE_REGISTRY;
 import static fi.vm.yti.codelist.intake.parser.impl.AbstractBaseParser.validateCodeValue;
 
 @Component
@@ -418,7 +418,7 @@ public class CodeSchemeDaoImpl extends AbstractDao implements CodeSchemeDao {
         final Set<Code> codes;
         if (codeDtos != null && !codeDtos.isEmpty()) {
             codes = new HashSet<>();
-            final CodeRegistry codeRegistry = codeRegistryRepository.findByCodeValueIgnoreCase(JUPO_REGISTRY);
+            final CodeRegistry codeRegistry = codeRegistryRepository.findByCodeValueIgnoreCase(PUBLIC_ADMIN_SERVICE_REGISTRY);
             final CodeScheme codeScheme = codeSchemeRepository.findByCodeRegistryAndCodeValueIgnoreCase(codeRegistry, ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME);
             codeDtos.forEach(codeDto -> {
                 final Code code = codeRepository.findByCodeSchemeAndCodeValueIgnoreCase(codeScheme, codeDto.getCodeValue());

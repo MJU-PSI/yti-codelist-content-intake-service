@@ -48,7 +48,7 @@ import fi.vm.yti.codelist.intake.update.UpdateManager;
 import fi.vm.yti.codelist.intake.util.FileUtils;
 import static fi.vm.yti.codelist.common.constants.ApiConstants.*;
 import static fi.vm.yti.codelist.intake.configuration.ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME;
-import static fi.vm.yti.codelist.intake.parser.impl.AbstractBaseParser.JUPO_REGISTRY;
+import static fi.vm.yti.codelist.intake.parser.impl.AbstractBaseParser.PUBLIC_ADMIN_SERVICE_REGISTRY;
 
 @Service
 public class YtiDataAccess {
@@ -161,9 +161,17 @@ public class YtiDataAccess {
         if (updateManager.shouldUpdateData(MIGRATION_LANGUAGECODES, MIGRATION_LANGUAGECODES_VERSION, MIGRATION_LANGUAGECODES_VERSION)) {
             final UpdateStatus updateStatus = updateManager.createStatus(MIGRATION_LANGUAGECODES, MIGRATION_LANGUAGECODES_VERSION, SOURCE_INTERNAL, MIGRATION_LANGUAGECODES_VERSION, UpdateManager.UPDATE_RUNNING);
             final Set<Code> defaultLanguageCodes = new HashSet<>();
-            defaultLanguageCodes.add(languageService.getLanguageCode("fi"));
-            defaultLanguageCodes.add(languageService.getLanguageCode("sv"));
-            defaultLanguageCodes.add(languageService.getLanguageCode("en"));
+            String[] languages = contentIntakeServiceProperties.getLanguages();
+            if(languages != null){
+                for(String language : languages ) {
+                    defaultLanguageCodes.add(languageService.getLanguageCode(language));
+                }
+            } 
+
+            if(defaultLanguageCodes.isEmpty()) {
+                defaultLanguageCodes.add(languageService.getLanguageCode("en"));
+            }           
+            
             final Set<CodeScheme> codeSchemes = codeSchemeDao.findAll();
             if (codeSchemes != null) {
                 codeSchemes.forEach(codeScheme -> {
@@ -402,7 +410,7 @@ public class YtiDataAccess {
 
     private void classifyServiceClassification() {
         LOG.info("Ensuring Service Classification CodeScheme belongs to P9 classification.");
-        final CodeRegistry codeRegistry = codeRegistryDao.findByCodeValue(JUPO_REGISTRY);
+        final CodeRegistry codeRegistry = codeRegistryDao.findByCodeValue(PUBLIC_ADMIN_SERVICE_REGISTRY);
         classifyCodeSchemeWithCodeValue(codeRegistry, YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME, SERVICE_CLASSIFICATION_P9);
     }
 
@@ -419,7 +427,7 @@ public class YtiDataAccess {
     }
 
     private Code getInfoDomain(final String codeValue) {
-        final CodeRegistry codeRegistry = codeRegistryDao.findByCodeValue(JUPO_REGISTRY);
+        final CodeRegistry codeRegistry = codeRegistryDao.findByCodeValue(PUBLIC_ADMIN_SERVICE_REGISTRY);
         final CodeScheme codeScheme = codeSchemeDao.findByCodeRegistryAndCodeValue(codeRegistry, YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME);
         return codeDao.findByCodeSchemeAndCodeValue(codeScheme, codeValue);
     }

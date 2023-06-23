@@ -48,7 +48,7 @@ import static fi.vm.yti.codelist.intake.exception.ErrorConstants.*;
 
 public abstract class AbstractBaseParser {
 
-    public static final String JUPO_REGISTRY = "jupo";
+    public static final String PUBLIC_ADMIN_SERVICE_REGISTRY = "mju";
     public static final String YTI_REGISTRY = "interoperabilityplatform";
     private static final Logger LOG = LoggerFactory.getLogger(AbstractBaseParser.class);
     private static final String CODE_CODEVALUE_VALIDATOR = "^[a-zA-Z0-9_\\-\\.\\+\\&\\#\\*]*$";

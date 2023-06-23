@@ -1,2 +1,2 @@
-CODEVALUE,ORGANIZATION,PREFLABEL_FI,PREFLABEL_SV,PREFLABEL_EN,DEFINITION_FI,DEFINITION_SV,DEFINITION_EN
-interoperabilityplatform,7d3a3c00-5a6b-489b-a3ed-63bb58c26a63,Yhteentoimivuusalustan metatiedot,,Interoperability platform's metadata,"Tähän rekisteriin kuuluvat ne koodistot, joita käytetään Yhteentoimivuusalustan työkalujen metatiedoissa.",,This register is for reference data that is used in the Interoperability platform's tools.
+CODEVALUE,ORGANIZATION,PREFLABEL_SL,PREFLABEL_EN,DEFINITION_SL,DEFINITION_EN
+interoperabilityplatform,7d3a3c00-5a6b-489b-a3ed-63bb58c26a63,"Meta podatki semantične interoperabilnosti","Interoperability platform's metadata","Ta register je za referenčne podatke, ki se uporabljajo v orodjih semantične interoperabilnosti.","This register is for reference data that is used in the Interoperability platform's tools."

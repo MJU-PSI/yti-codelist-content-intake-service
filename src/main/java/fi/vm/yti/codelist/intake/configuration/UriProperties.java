@@ -47,7 +47,7 @@ public class UriProperties {
     }
 
     public String getContextPath() {
-        return "/" + this.contextPath.replaceAll("^/|/$", "") + "/";
+        return this.contextPath;
     }
 
     public void setContextPath(final String contextPath) {

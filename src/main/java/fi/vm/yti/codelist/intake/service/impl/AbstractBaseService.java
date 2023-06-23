@@ -15,7 +15,7 @@ public interface AbstractBaseService {
     boolean preventPossibleImplicitCodeDeletionDuringFileImport = false;
 
     default boolean isServiceClassificationCodeScheme(final CodeScheme codeScheme) {
-        return isCodeSchemeWithRegistryAndCodeValue(codeScheme, JUPO_REGISTRY, ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME);
+        return isCodeSchemeWithRegistryAndCodeValue(codeScheme, PUBLIC_ADMIN_SERVICE_REGISTRY, ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME);
     }
 
     default boolean isLanguageCodeCodeScheme(final CodeScheme codeScheme) {

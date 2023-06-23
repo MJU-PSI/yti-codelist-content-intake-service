@@ -51,7 +51,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import static fi.vm.yti.codelist.common.constants.ApiConstants.FILTER_NAME_INFODOMAIN;
 import static fi.vm.yti.codelist.intake.configuration.ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME;
 import static fi.vm.yti.codelist.intake.exception.ErrorConstants.ERR_MSG_USER_500;
-import static fi.vm.yti.codelist.intake.parser.impl.AbstractBaseParser.JUPO_REGISTRY;
+import static fi.vm.yti.codelist.intake.parser.impl.AbstractBaseParser.PUBLIC_ADMIN_SERVICE_REGISTRY;
 
 @Component
 @Path("/v1/infodomains")
@@ -86,7 +86,7 @@ public class InfoDomainResource implements AbstractBaseResource {
         final ResponseWrapper<InfoDomainDTO> wrapper = new ResponseWrapper<>();
         wrapper.setMeta(meta);
         final ObjectMapper mapper = createObjectMapper();
-        final CodeSchemeDTO infoDomainScheme = codeSchemeService.findByCodeRegistryCodeValueAndCodeValue(JUPO_REGISTRY, YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME);
+        final CodeSchemeDTO infoDomainScheme = codeSchemeService.findByCodeRegistryCodeValueAndCodeValue(PUBLIC_ADMIN_SERVICE_REGISTRY, YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME);
         final Set<CodeDTO> codes = codeService.findByCodeSchemeId(infoDomainScheme.getId());
         final Set<InfoDomainDTO> infoDomains = new LinkedHashSet<>();
         final Map<String, Integer> statistics = getInfoDomainCounts();

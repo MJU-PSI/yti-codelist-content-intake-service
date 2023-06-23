@@ -27,6 +27,8 @@ public class ContentIntakeServiceProperties {
 
     private boolean initializeContent;
 
+    private String languages;
+
     public String getEnv() {
         return env;
     }
@@ -73,5 +75,13 @@ public class ContentIntakeServiceProperties {
 
     public void setInitializeContent(final boolean initializeContent) {
         this.initializeContent = initializeContent;
+    }
+
+    public String[] getLanguages() {
+        return languages.split(",");
+    }
+
+    public void setLanguages(final String languages) {
+        this.languages = languages;
     }
 }

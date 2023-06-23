@@ -148,11 +148,11 @@ public class CodeSchemeParserImpl extends AbstractBaseParser implements CodeSche
                 if (headerMap.containsKey(CONTENT_HEADER_HREF)) {
                     codeScheme.setExternalReferences(resolveHrefs(record.get(CONTENT_HEADER_HREF)));
                 }
-                if (!codeValue.equals(ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME) && !codeRegistry.getCodeValue().equals(JUPO_REGISTRY)) {
+                if (!codeValue.equals(ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME) && !codeRegistry.getCodeValue().equals(PUBLIC_ADMIN_SERVICE_REGISTRY)) {
                     codeScheme.setInfoDomains(resolveInfoDomainsFromString(parseStringFromCsvRecord(record, CONTENT_HEADER_INFODOMAIN)));
                 }
                 if ((!codeValue.equals(ApplicationConstants.YTI_LANGUAGECODE_CODESCHEME) && !codeRegistry.getCodeValue().equals(YTI_REGISTRY)) &&
-                    (!codeValue.equals(ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME) && !codeRegistry.getCodeValue().equals(JUPO_REGISTRY)) &&
+                    (!codeValue.equals(ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME) && !codeRegistry.getCodeValue().equals(PUBLIC_ADMIN_SERVICE_REGISTRY)) &&
                     headerMap.get(CONTENT_HEADER_LANGUAGECODE) != null) {
                     final Set<CodeDTO> languageCodes = resolveLanguageCodesFromString(parseStringFromCsvRecord(record, CONTENT_HEADER_LANGUAGECODE));
                     if (!languageCodes.isEmpty()) {
@@ -246,11 +246,11 @@ public class CodeSchemeParserImpl extends AbstractBaseParser implements CodeSche
                 if (headerMap.containsKey(CONTENT_HEADER_ID)) {
                     codeScheme.setId(parseUUIDFromString(formatter.formatCellValue(row.getCell(headerMap.get(CONTENT_HEADER_ID)))));
                 }
-                if (!codeValue.equals(ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME) && !codeRegistry.getCodeValue().equals(JUPO_REGISTRY)) {
+                if (!codeValue.equals(ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME) && !codeRegistry.getCodeValue().equals(PUBLIC_ADMIN_SERVICE_REGISTRY)) {
                     codeScheme.setInfoDomains(resolveInfoDomainsFromString(formatter.formatCellValue(row.getCell(headerMap.get(CONTENT_HEADER_INFODOMAIN)))));
                 }
                 if ((!codeValue.equals(ApplicationConstants.YTI_LANGUAGECODE_CODESCHEME) && !codeRegistry.getCodeValue().equals(YTI_REGISTRY)) &&
-                    (!codeValue.equals(ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME) && !codeRegistry.getCodeValue().equals(JUPO_REGISTRY)) &&
+                    (!codeValue.equals(ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME) && !codeRegistry.getCodeValue().equals(PUBLIC_ADMIN_SERVICE_REGISTRY)) &&
                     headerMap.get(CONTENT_HEADER_LANGUAGECODE) != null) {
                     final Set<CodeDTO> languageCodes = resolveLanguageCodesFromString(formatter.formatCellValue(row.getCell(headerMap.get(CONTENT_HEADER_LANGUAGECODE))));
                     if (!languageCodes.isEmpty()) {
