@@ -199,6 +199,7 @@ public class MemberParserImpl extends AbstractBaseParser implements MemberParser
         Map<String, Integer> prefLabelHeaders = null;
         boolean firstRow = true;
         checkIfExcelEmpty(rowIterator);
+        checkExcelMaxRows(rowIterator);
         List<Integer> sequenceIds = new LinkedList<>();
         while (rowIterator.hasNext()) {
             final Row row = rowIterator.next();

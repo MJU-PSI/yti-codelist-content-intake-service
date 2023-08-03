@@ -160,6 +160,7 @@ public class CodeParserImpl extends AbstractBaseParser implements CodeParser {
         Map<String, Integer> definitionHeaders = null;
         Map<String, Integer> descriptionHeaders = null;
         checkIfExcelEmpty(rowIterator);
+        checkExcelMaxRows(rowIterator);
         while (rowIterator.hasNext()) {
             final Row row = rowIterator.next();
             final String rowIdentifier = getRowIdentifier(row);

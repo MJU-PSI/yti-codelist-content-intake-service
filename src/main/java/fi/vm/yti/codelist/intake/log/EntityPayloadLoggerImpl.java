@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -158,7 +159,7 @@ public class EntityPayloadLoggerImpl implements EntityPayloadLogger {
         try {
             LOG.debug(mapper.writerWithView(Views.Normal.class).writeValueAsString(dtoMapperService.mapValueTypeDto(valueType)));
         } catch (final JsonProcessingException e) {
-            LOG.error(String.format("Failed to write log for valueType: %s", valueType.getId()), e);
+            LOG.error(String.format("Failed to write log for valueType: %s", StringUtils.deleteWhitespace(valueType.getId().toString())), e);
         }
         endPayloadLogging(VALUETYPE, valueType.getId());
     }

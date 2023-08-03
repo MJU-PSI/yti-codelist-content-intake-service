@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -53,6 +55,7 @@ import static fi.vm.yti.codelist.intake.util.EncodingUtils.urlEncodeCodeValue;
 
 @Component
 public class MemberDaoImpl extends AbstractDao implements MemberDao {
+    private static final Logger LOG = LoggerFactory.getLogger(MemberDaoImpl.class);
 
     private static final String LOCALNAME_CROSS_REFERENCE_LIST = "crossReferenceList";
     private static final String PREFIX_FOR_EXTENSION_SEQUENCE_NAME = "seq_for_ext_";
@@ -286,7 +289,7 @@ public class MemberDaoImpl extends AbstractDao implements MemberDao {
         try {
             return UUID.fromString(uuid);
         } catch (final IllegalArgumentException e) {
-            // Ignore exception on purpose and return null here.
+            LOG.debug("Exception constructing UUID: " + e.getMessage());
             return null;
         }
     }
@@ -437,6 +440,7 @@ public class MemberDaoImpl extends AbstractDao implements MemberDao {
             Integer.parseInt(string);
             return true;
         } catch (final NumberFormatException e) {
+            LOG.debug("Exception parsing int: " + e.getMessage());
             return false;
         }
     }

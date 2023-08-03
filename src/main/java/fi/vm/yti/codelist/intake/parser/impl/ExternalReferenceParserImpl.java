@@ -156,6 +156,7 @@ public class ExternalReferenceParserImpl extends AbstractBaseParser implements E
         Map<String, Integer> descriptionHeaders = null;
         boolean firstRow = true;
         checkIfExcelEmpty(rowIterator);
+        checkExcelMaxRows(rowIterator);
         while (rowIterator.hasNext()) {
             final Row row = rowIterator.next();
             if (firstRow) {

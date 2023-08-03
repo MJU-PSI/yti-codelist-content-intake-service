@@ -15,6 +15,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -219,6 +220,7 @@ public class CodeSchemeParserImpl extends AbstractBaseParser implements CodeSche
         Map<String, Integer> changeNoteHeaders = null;
         boolean firstRow = true;
         checkIfExcelEmpty(rowIterator);
+        checkExcelMaxRows(rowIterator);
         while (rowIterator.hasNext()) {
             final Row row = rowIterator.next();
             final String rowIdentifier = getRowIdentifier(row);

@@ -135,6 +135,7 @@ public class CodeRegistryParserImpl extends AbstractBaseParser implements CodeRe
             Map<String, Integer> prefLabelHeaders = null;
             Map<String, Integer> descriptionHeaders = null;
             checkIfExcelEmpty(rowIterator);
+            checkExcelMaxRows(rowIterator);
             while (rowIterator.hasNext()) {
                 final Row row = rowIterator.next();
                 final String rowIdentifier = getRowIdentifier(row);
