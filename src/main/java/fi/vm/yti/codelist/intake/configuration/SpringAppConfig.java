@@ -39,10 +39,13 @@ public class SpringAppConfig {
     private static final int CONNECTION_TIMEOUT = 30000;
     private static final int ES_CONNECTION_TIMEOUT = 300000;
 
-    @Value("${yti_codelist_content_intake_service_elastic_host}")
+    @Value("${elasticsearch.scheme}")
+    private String elasticsearchScheme;
+
+    @Value("${elasticsearch.host}")
     private String elasticsearchHost;
 
-    @Value("${yti_codelist_content_intake_service_elastic_port}")
+    @Value("${elasticsearch.port}")
     private Integer elasticsearchPort;
 
     @Value(value = "${application.contextPath}")
@@ -85,7 +88,7 @@ public class SpringAppConfig {
     @SuppressWarnings("resource")
     protected RestHighLevelClient elasticSearchRestHighLevelClient() {
         final RestClientBuilder builder = RestClient.builder(
-            new HttpHost(elasticsearchHost, elasticsearchPort, "http"))
+            new HttpHost(elasticsearchHost, elasticsearchPort, elasticsearchScheme))
             .setRequestConfigCallback(
                 requestConfigBuilder -> requestConfigBuilder
                     .setConnectTimeout(ES_CONNECTION_TIMEOUT)
