@@ -37,7 +37,6 @@ import com.zaxxer.hikari.HikariDataSource;
 public class SpringAppConfig {
 
     private static final int CONNECTION_TIMEOUT = 30000;
-    private static final int ES_CONNECTION_TIMEOUT = 300000;
 
     @Value("${elasticsearch.scheme}")
     private String elasticsearchScheme;
@@ -87,12 +86,7 @@ public class SpringAppConfig {
     @Bean
     @SuppressWarnings("resource")
     protected RestHighLevelClient elasticSearchRestHighLevelClient() {
-        final RestClientBuilder builder = RestClient.builder(
-            new HttpHost(elasticsearchHost, elasticsearchPort, elasticsearchScheme))
-            .setRequestConfigCallback(
-                requestConfigBuilder -> requestConfigBuilder
-                    .setConnectTimeout(ES_CONNECTION_TIMEOUT)
-                    .setSocketTimeout(ES_CONNECTION_TIMEOUT));
+        final RestClientBuilder builder = RestClient.builder(new HttpHost(elasticsearchHost, elasticsearchPort, elasticsearchScheme));
         return new RestHighLevelClient(builder);
     }
 
