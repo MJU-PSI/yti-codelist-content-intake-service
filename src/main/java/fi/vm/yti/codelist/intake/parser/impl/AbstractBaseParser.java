@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -456,8 +457,8 @@ public abstract class AbstractBaseParser {
         }
     }
 
-    void checkExcelMaxRows(final Iterator<Row> rowIterator) {
-        if (IterableUtils.size((Iterable<?>) rowIterator) > MAX_ROWS) {
+    void checkExcelMaxRows(final Sheet sheet) {
+        if (sheet.getLastRowNum() > MAX_ROWS) {
             throw new YtiCodeListException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_USER_ROWS_EXCEL));
         }
     }
