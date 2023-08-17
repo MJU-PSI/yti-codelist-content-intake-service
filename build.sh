@@ -1,4 +1,2 @@
 #!/bin/bash
-#
-#
-mvn clean package docker:build
+docker build -t yti-codelist-content-intake-service:latest .
