@@ -35,6 +35,7 @@ import com.google.common.base.Stopwatch;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import fi.vm.yti.codelist.common.dto.AbstractIdentifyableCodeDTO;
+import fi.vm.yti.codelist.common.dto.AnnotationDTO;
 import fi.vm.yti.codelist.common.dto.CodeDTO;
 import fi.vm.yti.codelist.common.dto.CodeRegistryDTO;
 import fi.vm.yti.codelist.common.dto.CodeSchemeDTO;
@@ -50,6 +51,7 @@ import fi.vm.yti.codelist.intake.indexing.Indexing;
 import fi.vm.yti.codelist.intake.indexing.IndexingTools;
 import fi.vm.yti.codelist.intake.jpa.IndexStatusRepository;
 import fi.vm.yti.codelist.intake.model.IndexStatus;
+import fi.vm.yti.codelist.intake.service.AnnotationService;
 import fi.vm.yti.codelist.intake.service.CodeRegistryService;
 import fi.vm.yti.codelist.intake.service.CodeSchemeService;
 import fi.vm.yti.codelist.intake.service.CodeService;
@@ -72,6 +74,7 @@ public class IndexingImpl implements Indexing {
     private static final String INDEX_STATUS_FAILED = "failed";
     private static final String NAME_CODEREGISTRIES = "CodeRegistries";
     private static final String NAME_CODESCHEMES = "CodeSchemes";
+    private static final String NAME_ANNOTATIONES = "Annotations";
     private static final String NAME_CODES = "Codes";
     private static final String NAME_EXTERNALREFERENCES = "ExternalReferences";
     private static final String NAME_PROPERTYTYPES = "PropertyTypes";
@@ -85,6 +88,7 @@ public class IndexingImpl implements Indexing {
 
     private final IndexStatusRepository indexStatusRepository;
     private final CodeSchemeService codeSchemeService;
+    private final AnnotationService annotationService;
     private final CodeRegistryService codeRegistryService;
     private final CodeService codeService;
     private final ExternalReferenceService externalReferenceService;
@@ -103,6 +107,7 @@ public class IndexingImpl implements Indexing {
                         final IndexStatusRepository indexStatusRepository,
                         final CodeRegistryService codeRegistryService,
                         final CodeSchemeService codeSchemeService,
+                        final AnnotationService annotationService,
                         final CodeService codeService,
                         final ExternalReferenceService externalReferenceService,
                         final PropertyTypeService propertyTypeService,
@@ -114,6 +119,7 @@ public class IndexingImpl implements Indexing {
         this.indexStatusRepository = indexStatusRepository;
         this.codeRegistryService = codeRegistryService;
         this.codeSchemeService = codeSchemeService;
+        this.annotationService = annotationService;
         this.codeService = codeService;
         this.externalReferenceService = externalReferenceService;
         this.propertyTypeService = propertyTypeService;
@@ -136,6 +142,11 @@ public class IndexingImpl implements Indexing {
             }
         }
         return indexData(codeSchemes, indexName, ELASTIC_TYPE_CODESCHEME, NAME_CODESCHEMES, Views.ExtendedCodeScheme.class);
+    }
+
+    private boolean indexAnnotations(final String indexName) {
+        final Set<AnnotationDTO> annotations = annotationService.findAll();
+        return indexData(annotations, indexName, ELASTIC_TYPE_ANNOTATIONE, NAME_ANNOTATIONES, Views.ExtendedAnnotation.class);
     }
 
     private int getContentPageCount(final int contentCount,
@@ -342,6 +353,16 @@ public class IndexingImpl implements Indexing {
         deleteData(codeSchemes, ELASTIC_INDEX_CODESCHEME, ELASTIC_TYPE_CODESCHEME, NAME_CODESCHEMES);
     }
 
+    public void deleteAnnotation(final AnnotationDTO annotation) {
+        final Set<AnnotationDTO> annotations = new HashSet<>();
+        annotations.add(annotation);
+        deleteData(annotations, ELASTIC_INDEX_ANNOTATIONE, ELASTIC_TYPE_ANNOTATIONE, NAME_ANNOTATIONES);
+    }
+
+    public void deleteAnnotations(final Set<AnnotationDTO> annotations) {
+        deleteData(annotations, ELASTIC_INDEX_ANNOTATIONE, ELASTIC_TYPE_ANNOTATIONE, NAME_ANNOTATIONES);
+    }
+
     public void deleteExternalReferences(final Set<ExternalReferenceDTO> externalReferences) {
         deleteData(externalReferences, ELASTIC_INDEX_EXTERNALREFERENCE, ELASTIC_TYPE_EXTERNALREFERENCE, NAME_EXTERNALREFERENCES);
     }
@@ -396,6 +417,10 @@ public class IndexingImpl implements Indexing {
 
     public void updateCodeSchemes(final Set<CodeSchemeDTO> codeSchemes) {
         indexData(codeSchemes, ELASTIC_INDEX_CODESCHEME, ELASTIC_TYPE_CODESCHEME, NAME_CODESCHEMES, Views.ExtendedCodeScheme.class);
+    }
+
+    public void updateAnnotations(final Set<AnnotationDTO> annotationes) {
+        indexData(annotationes, ELASTIC_INDEX_ANNOTATIONE, ELASTIC_TYPE_ANNOTATIONE, NAME_ANNOTATIONES, Views.ExtendedAnnotation.class);
     }
 
     public void updateCodeRegistry(final CodeRegistryDTO codeRegistry) {
@@ -495,6 +520,9 @@ public class IndexingImpl implements Indexing {
         if (!reIndex(ELASTIC_INDEX_CODESCHEME, ELASTIC_TYPE_CODESCHEME)) {
             success = false;
         }
+        if (!reIndex(ELASTIC_INDEX_ANNOTATIONE, ELASTIC_TYPE_ANNOTATIONE)) {
+            success = false;
+        }
         if (!reIndex(ELASTIC_INDEX_CODE, ELASTIC_TYPE_CODE)) {
             success = false;
         }
@@ -557,6 +585,9 @@ public class IndexingImpl implements Indexing {
                 break;
             case ELASTIC_INDEX_CODESCHEME:
                 success = indexCodeSchemes(indexName);
+                break;
+            case ELASTIC_INDEX_ANNOTATIONE:
+                success = indexAnnotations(indexName);
                 break;
             case ELASTIC_INDEX_CODE:
                 success = indexCodes(indexName);

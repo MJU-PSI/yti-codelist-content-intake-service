@@ -2,8 +2,10 @@ package fi.vm.yti.codelist.intake.indexing;
 
 import java.util.Set;
 
+import fi.vm.yti.codelist.common.dto.AnnotationDTO;
 import fi.vm.yti.codelist.common.dto.CodeDTO;
 import fi.vm.yti.codelist.common.dto.CodeRegistryDTO;
+import fi.vm.yti.codelist.common.dto.CodeSchemeAnnotationDTO;
 import fi.vm.yti.codelist.common.dto.CodeSchemeDTO;
 import fi.vm.yti.codelist.common.dto.ExtensionDTO;
 import fi.vm.yti.codelist.common.dto.ExternalReferenceDTO;
@@ -70,4 +72,10 @@ public interface Indexing {
     void cleanRunningIndexingBookkeeping();
 
     void reIndexEverythingIfNecessary();
+
+    void updateAnnotations(final Set<AnnotationDTO> annotations);
+
+    void deleteAnnotation(final AnnotationDTO annotation);
+
+    void deleteAnnotations(final Set<AnnotationDTO> annotations);
 }

@@ -19,6 +19,7 @@ import fi.vm.yti.codelist.intake.filter.CharsetResponseFilter;
 import fi.vm.yti.codelist.intake.filter.DataInitializationFilter;
 import fi.vm.yti.codelist.intake.filter.RequestLoggingFilter;
 import fi.vm.yti.codelist.intake.resource.AdminResource;
+import fi.vm.yti.codelist.intake.resource.AnnotationResource;
 import fi.vm.yti.codelist.intake.resource.AuthenticatedUserResource;
 import fi.vm.yti.codelist.intake.resource.CodeRegistryResource;
 import fi.vm.yti.codelist.intake.resource.ExtensionResource;
@@ -127,6 +128,7 @@ public class JerseyConfig extends ResourceConfig {
         register(ExtensionResource.class);
         register(MemberResource.class);
         register(ValueTypeResource.class);
+        register(AnnotationResource.class);
 
         // Data initialization filter
         register(DataInitializationFilter.class, Priorities.AUTHORIZATION);

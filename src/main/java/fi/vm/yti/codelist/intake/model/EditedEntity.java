@@ -24,6 +24,7 @@ public class EditedEntity {
     private Extension extension;
     private Member member;
     private ValueType valueType;
+    private Annotation annotation;
 
     public EditedEntity() {
     }
@@ -131,5 +132,15 @@ public class EditedEntity {
 
     public void setValueType(final ValueType valueType) {
         this.valueType = valueType;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "annotation_id")
+    public Annotation getAnnotation() {
+        return annotation;
+    }
+
+    public void setAnnotation(final Annotation annotation) {
+        this.annotation = annotation;
     }
 }

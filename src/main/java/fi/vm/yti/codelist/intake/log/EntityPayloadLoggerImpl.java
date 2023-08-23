@@ -20,9 +20,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import brave.Span;
 import brave.Tracer;
 import fi.vm.yti.codelist.common.dto.Views;
+import fi.vm.yti.codelist.intake.model.Annotation;
 import fi.vm.yti.codelist.intake.model.Code;
 import fi.vm.yti.codelist.intake.model.CodeRegistry;
 import fi.vm.yti.codelist.intake.model.CodeScheme;
+import fi.vm.yti.codelist.intake.model.CodeSchemeAnnotation;
 import fi.vm.yti.codelist.intake.model.Extension;
 import fi.vm.yti.codelist.intake.model.ExternalReference;
 import fi.vm.yti.codelist.intake.model.Member;
@@ -37,6 +39,8 @@ public class EntityPayloadLoggerImpl implements EntityPayloadLogger {
     private static final Logger LOG = LoggerFactory.getLogger(EntityPayloadLoggerImpl.class);
     private static final String CODEREGISTRY = "CodeRegistry";
     private static final String CODESCHEME = "CodeScheme";
+    private static final String ANNOTATION = "Annotation";
+    private static final String CODESCHEMEANNOTATION = "CodeSchemeAnnotation";
     private static final String CODE = "Code";
     private static final String EXTERNALREFERENCE = "ExternalReference";
     private static final String PROPERTYTYPE = "PropertyType";
@@ -88,6 +92,17 @@ public class EntityPayloadLoggerImpl implements EntityPayloadLogger {
             LOG.error(String.format("Failed to write log for codeScheme: %s", codeScheme.getId()), e);
         }
         endPayloadLogging(CODESCHEME, codeScheme.getId());
+    }
+
+    @Transactional
+    public void logAnnotation(final Annotation annotation) {
+        beginPayloadLogging(ANNOTATION, annotation.getId());
+        try {
+            LOG.debug(mapper.writerWithView(Views.ExtendedAnnotation.class).writeValueAsString(dtoMapperService.mapDeepAnnotationDto(annotation)));
+        } catch (final JsonProcessingException e) {
+            LOG.error(String.format("Failed to write log for annotation: %s", annotation.getId()), e);
+        }
+        endPayloadLogging(ANNOTATION, annotation.getId());
     }
 
     @Transactional

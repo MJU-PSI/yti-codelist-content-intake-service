@@ -14,9 +14,11 @@ import brave.Span;
 import brave.Tracer;
 import fi.vm.yti.codelist.intake.jpa.CommitRepository;
 import fi.vm.yti.codelist.intake.jpa.EditedEntityRepository;
+import fi.vm.yti.codelist.intake.model.Annotation;
 import fi.vm.yti.codelist.intake.model.Code;
 import fi.vm.yti.codelist.intake.model.CodeRegistry;
 import fi.vm.yti.codelist.intake.model.CodeScheme;
+import fi.vm.yti.codelist.intake.model.CodeSchemeAnnotation;
 import fi.vm.yti.codelist.intake.model.Commit;
 import fi.vm.yti.codelist.intake.model.EditedEntity;
 import fi.vm.yti.codelist.intake.model.Extension;
@@ -62,6 +64,14 @@ public class EntityChangeLoggerImpl implements EntityChangeLogger {
         entityPayloadLogger.logCodeScheme(codeScheme);
         final EditedEntity editedEntity = new EditedEntity(createCommit());
         editedEntity.setCodeScheme(codeScheme);
+        editedEntityRepository.save(editedEntity);
+    }
+
+    @Transactional
+    public void logAnnotationChange(final Annotation annotation) {
+        entityPayloadLogger.logAnnotation(annotation);
+        final EditedEntity editedEntity = new EditedEntity(createCommit());
+        editedEntity.setAnnotation(annotation);
         editedEntityRepository.save(editedEntity);
     }
 

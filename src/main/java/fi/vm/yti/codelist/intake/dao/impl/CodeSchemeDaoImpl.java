@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.vm.yti.codelist.common.dto.CodeDTO;
+import fi.vm.yti.codelist.common.dto.CodeSchemeAnnotationDTO;
 import fi.vm.yti.codelist.common.dto.CodeSchemeDTO;
 import fi.vm.yti.codelist.common.dto.ErrorModel;
 import fi.vm.yti.codelist.common.dto.OrganizationDTO;
@@ -23,15 +24,19 @@ import fi.vm.yti.codelist.intake.exception.ExistingCodeException;
 import fi.vm.yti.codelist.intake.exception.InvalidStatusAtCreationTimeException;
 import fi.vm.yti.codelist.intake.exception.UnauthorizedException;
 import fi.vm.yti.codelist.intake.exception.YtiCodeListException;
+import fi.vm.yti.codelist.intake.jpa.AnnotationRepository;
 import fi.vm.yti.codelist.intake.jpa.CodeRegistryRepository;
 import fi.vm.yti.codelist.intake.jpa.CodeRepository;
+import fi.vm.yti.codelist.intake.jpa.CodeSchemeAnnotationRepository;
 import fi.vm.yti.codelist.intake.jpa.CodeSchemeRepository;
 import fi.vm.yti.codelist.intake.jpa.OrganizationRepository;
 import fi.vm.yti.codelist.intake.language.LanguageService;
 import fi.vm.yti.codelist.intake.log.EntityChangeLogger;
+import fi.vm.yti.codelist.intake.model.Annotation;
 import fi.vm.yti.codelist.intake.model.Code;
 import fi.vm.yti.codelist.intake.model.CodeRegistry;
 import fi.vm.yti.codelist.intake.model.CodeScheme;
+import fi.vm.yti.codelist.intake.model.CodeSchemeAnnotation;
 import fi.vm.yti.codelist.intake.model.ExternalReference;
 import fi.vm.yti.codelist.intake.model.Organization;
 import fi.vm.yti.codelist.intake.security.AuthorizationManager;
@@ -51,6 +56,8 @@ public class CodeSchemeDaoImpl extends AbstractDao implements CodeSchemeDao {
     private final ExternalReferenceDao externalReferenceDao;
     private final LanguageService languageService;
     private final OrganizationRepository organizationRepository;
+    private final CodeSchemeAnnotationRepository codeSchemeAnnotationRepository;
+    private final AnnotationRepository annotationRepository;
 
     @Inject
     public CodeSchemeDaoImpl(final EntityChangeLogger entityChangeLogger,
@@ -61,7 +68,9 @@ public class CodeSchemeDaoImpl extends AbstractDao implements CodeSchemeDao {
                              final AuthorizationManager authorizationManager,
                              final ExternalReferenceDao externalReferenceDao,
                              final LanguageService languageService,
-                             final OrganizationRepository organizationRepository) {
+                             final OrganizationRepository organizationRepository,
+                             final CodeSchemeAnnotationRepository codeSchemeAnnotationRepository,
+                             final AnnotationRepository annotationRepository) {
         super(languageService);
         this.entityChangeLogger = entityChangeLogger;
         this.apiUtils = apiUtils;
@@ -72,6 +81,8 @@ public class CodeSchemeDaoImpl extends AbstractDao implements CodeSchemeDao {
         this.externalReferenceDao = externalReferenceDao;
         this.languageService = languageService;
         this.organizationRepository = organizationRepository;
+        this.codeSchemeAnnotationRepository = codeSchemeAnnotationRepository;
+        this.annotationRepository = annotationRepository;
     }
 
     @Transactional
@@ -102,22 +113,22 @@ public class CodeSchemeDaoImpl extends AbstractDao implements CodeSchemeDao {
 
     @Transactional
     public CodeScheme findById(final UUID id) {
-        return codeSchemeRepository.findById(id);
+        return setAnnotation(codeSchemeRepository.findById(id));
     }
 
     @Transactional
     public CodeScheme findByUri(final String uri) {
-        return codeSchemeRepository.findByUriIgnoreCase(uri);
+        return setAnnotation(codeSchemeRepository.findByUriIgnoreCase(uri));
     }
 
     public Set<CodeScheme> findByCodeRegistryCodeValue(final String codeRegistryCodeValue) {
-        return codeSchemeRepository.findByCodeRegistryCodeValueIgnoreCase(codeRegistryCodeValue);
+        return setAnnotations(codeSchemeRepository.findByCodeRegistryCodeValueIgnoreCase(codeRegistryCodeValue));
     }
 
     @Transactional
     public CodeScheme findByCodeRegistryAndCodeValue(final CodeRegistry codeRegistry,
                                                      final String codeValue) {
-        return codeSchemeRepository.findByCodeRegistryAndCodeValueIgnoreCase(codeRegistry, codeValue);
+        return setAnnotation(codeSchemeRepository.findByCodeRegistryAndCodeValueIgnoreCase(codeRegistry, codeValue));
     }
 
     @Transactional
@@ -125,14 +136,33 @@ public class CodeSchemeDaoImpl extends AbstractDao implements CodeSchemeDao {
                                                               final String codeSchemeCodeValue) {
         final CodeRegistry codeRegistry = codeRegistryRepository.findByCodeValueIgnoreCase(codeRegistryCodeValue);
         if (codeRegistry != null) {
-            return codeSchemeRepository.findByCodeRegistryAndCodeValueIgnoreCase(codeRegistry, codeSchemeCodeValue);
+            return setAnnotation(codeSchemeRepository.findByCodeRegistryAndCodeValueIgnoreCase(codeRegistry, codeSchemeCodeValue));
         }
         return null;
     }
 
     @Transactional
     public Set<CodeScheme> findAll() {
-        return codeSchemeRepository.findAll();
+        return setAnnotations(codeSchemeRepository.findAll());
+    }
+
+    private Set<CodeScheme> setAnnotations(final Set<CodeScheme> codeSchemes) {
+        if (codeSchemes != null && !codeSchemes.isEmpty()) {
+            for (CodeScheme codeScheme : codeSchemes) {
+                setAnnotation(codeScheme);
+            }
+        }
+        return codeSchemes;
+    }
+
+    private CodeScheme setAnnotation(final CodeScheme codeScheme) {
+        if (codeScheme != null && codeScheme.getCodeSchemeAnnotations() != null && !codeScheme.getCodeSchemeAnnotations().isEmpty()) {
+            for (CodeSchemeAnnotation codeSchemeAnnotation : codeScheme.getCodeSchemeAnnotations()) {
+                final Annotation annotation = annotationRepository.findById(codeSchemeAnnotation.getAnnotationId());
+                codeSchemeAnnotation.setAnnotation(annotation);
+            }
+        }
+        return codeScheme;
     }
 
     @Transactional
@@ -250,6 +280,11 @@ public class CodeSchemeDaoImpl extends AbstractDao implements CodeSchemeDao {
     private CodeScheme updateCodeScheme(final CodeRegistry codeRegistry,
                                         final CodeScheme existingCodeScheme,
                                         final CodeSchemeDTO fromCodeScheme) {
+        final Set<CodeSchemeAnnotation> exsistingCodeSchemeAnnotations = codeSchemeAnnotationRepository.findByCodeschemeId(existingCodeScheme.getId());
+        for (final CodeSchemeAnnotation exsistingCodeSchemeAnnot : exsistingCodeSchemeAnnotations) {
+            codeSchemeAnnotationRepository.delete(exsistingCodeSchemeAnnot);
+        }
+
         final Date timeStamp = new Date(System.currentTimeMillis());
         if (!Objects.equals(existingCodeScheme.getStatus(), fromCodeScheme.getStatus())) {
             if (!authorizationManager.isSuperUser() && Status.valueOf(existingCodeScheme.getStatus()).ordinal() >= Status.VALID.ordinal() && Status.valueOf(fromCodeScheme.getStatus()).ordinal() < Status.VALID.ordinal()) {
@@ -262,6 +297,7 @@ public class CodeSchemeDaoImpl extends AbstractDao implements CodeSchemeDao {
             existingCodeScheme.setCodeRegistry(codeRegistry);
         }
         existingCodeScheme.setOrganizations(resolveOrganizationsFromDtosOrCodeRegistry(fromCodeScheme.getOrganizations(), codeRegistry));
+        existingCodeScheme.setCodeSchemeAnnotations(resolveCodeSchemeAnnotationFromDtos(fromCodeScheme.getCodeSchemeAnnotations()));
         final Set<Code> infoDomains = resolveInfoDomainsFromDtos(fromCodeScheme.getInfoDomains());
         if (!Objects.equals(existingCodeScheme.getInfoDomains(), infoDomains)) {
             if (infoDomains != null && !infoDomains.isEmpty()) {
@@ -349,6 +385,12 @@ public class CodeSchemeDaoImpl extends AbstractDao implements CodeSchemeDao {
             codeScheme.setId(uuid);
         }
         codeScheme.setOrganizations(resolveOrganizationsFromDtosOrCodeRegistry(fromCodeScheme.getOrganizations(), codeRegistry));
+        if (fromCodeScheme.getCodeSchemeAnnotations() != null) {
+            for (final CodeSchemeAnnotationDTO codeSchemeAnnot : fromCodeScheme.getCodeSchemeAnnotations()) {
+                codeSchemeAnnot.setCodeschemeId(codeScheme.getId());
+            }
+        }
+        codeScheme.setCodeSchemeAnnotations(resolveCodeSchemeAnnotationFromDtos(fromCodeScheme.getCodeSchemeAnnotations()));
         final String codeValue = fromCodeScheme.getCodeValue();
         validateCodeValue(codeValue);
         codeScheme.setCodeValue(codeValue);
@@ -503,6 +545,35 @@ public class CodeSchemeDaoImpl extends AbstractDao implements CodeSchemeDao {
             throw new YtiCodeListException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_USER_CODESCHEME_NO_ORGANIZATION));
         }
         return organizations;
+    }
+
+    private Set<CodeSchemeAnnotation> resolveCodeSchemeAnnotationFromDtos(final Set<CodeSchemeAnnotationDTO> codeSchemeAnnotationDtos) {
+        final Set<CodeSchemeAnnotation> codeSchemeAnnotations = new HashSet<>();
+        if (codeSchemeAnnotationDtos != null && !codeSchemeAnnotationDtos.isEmpty()) {
+            codeSchemeAnnotationDtos.forEach(codeSchemeAnnotationDto -> {
+                for (Map.Entry<String, String> entry : codeSchemeAnnotationDto.getValue().entrySet()) {
+                    final CodeSchemeAnnotation exsistingCodeSchemeAnnotation = codeSchemeAnnotationRepository.findByCodeschemeIdAndAnnotationIdAndLanguage(codeSchemeAnnotationDto.getCodeschemeId(), codeSchemeAnnotationDto.getAnnotationId(), entry.getKey());
+                    if (exsistingCodeSchemeAnnotation != null) {
+                        exsistingCodeSchemeAnnotation.setAnnotation(getAnnotationFromId(codeSchemeAnnotationDto.getAnnotationId()));
+                        exsistingCodeSchemeAnnotation.setValue(entry.getValue());
+                        codeSchemeAnnotations.add(exsistingCodeSchemeAnnotation);
+                    } else {
+                        final CodeSchemeAnnotation codeSchemeAnnotation = new CodeSchemeAnnotation();
+                        codeSchemeAnnotation.setAnnotationId(codeSchemeAnnotationDto.getAnnotationId());
+                        codeSchemeAnnotation.setCodeschemeId(codeSchemeAnnotationDto.getCodeschemeId());
+                        codeSchemeAnnotation.setAnnotation(getAnnotationFromId(codeSchemeAnnotationDto.getAnnotationId()));
+                        codeSchemeAnnotation.setLanguage(entry.getKey());
+                        codeSchemeAnnotation.setValue(entry.getValue());
+                        codeSchemeAnnotations.add(codeSchemeAnnotation);
+                    }
+                }
+            });
+        }
+        return codeSchemeAnnotations;
+    }
+
+    private Annotation getAnnotationFromId(final UUID annotationId) {
+        return annotationRepository.findById(annotationId);
     }
 
     private void mapPrefLabel(final CodeSchemeDTO fromCodeScheme,

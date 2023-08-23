@@ -57,6 +57,8 @@ public class CodeScheme extends AbstractHistoricalCode implements Serializable {
     private Map<String, String> feedbackChannel;
     private Date contentModified;
     private Date statusModified;
+    //private Set<Annotation> annotations;
+    private Set<CodeSchemeAnnotation> codeSchemeAnnotations;
 
     public CodeScheme() {
         prefLabel = new HashMap<>();
@@ -497,5 +499,14 @@ public class CodeScheme extends AbstractHistoricalCode implements Serializable {
             this.feedbackChannel.remove(language);
         }
         setFeedbackChannel(this.feedbackChannel);
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "codescheme", cascade = CascadeType.ALL)
+    public Set<CodeSchemeAnnotation> getCodeSchemeAnnotations() {
+        return codeSchemeAnnotations;
+    }
+
+    public void setCodeSchemeAnnotations(final Set<CodeSchemeAnnotation> codeSchemeAnnotations) {
+        this.codeSchemeAnnotations = codeSchemeAnnotations;
     }
 }

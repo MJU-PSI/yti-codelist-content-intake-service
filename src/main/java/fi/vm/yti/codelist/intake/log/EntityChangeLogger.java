@@ -2,6 +2,7 @@ package fi.vm.yti.codelist.intake.log;
 
 import java.util.Set;
 
+import fi.vm.yti.codelist.intake.model.Annotation;
 import fi.vm.yti.codelist.intake.model.Code;
 import fi.vm.yti.codelist.intake.model.CodeRegistry;
 import fi.vm.yti.codelist.intake.model.CodeScheme;
@@ -16,6 +17,8 @@ public interface EntityChangeLogger {
     void logCodeRegistryChange(final CodeRegistry codeRegistry);
 
     void logCodeSchemeChange(final CodeScheme codeScheme);
+
+    void logAnnotationChange(final Annotation annotation);
 
     void logCodeChange(final Code code);
 

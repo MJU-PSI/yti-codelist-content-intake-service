@@ -2,6 +2,7 @@ package fi.vm.yti.codelist.intake.log;
 
 import java.util.Set;
 
+import fi.vm.yti.codelist.intake.model.Annotation;
 import fi.vm.yti.codelist.intake.model.Code;
 import fi.vm.yti.codelist.intake.model.CodeRegistry;
 import fi.vm.yti.codelist.intake.model.CodeScheme;
@@ -16,6 +17,8 @@ public interface EntityPayloadLogger {
     void logCodeRegistry(final CodeRegistry codeRegistry);
 
     void logCodeScheme(final CodeScheme codeScheme);
+
+    void logAnnotation(final Annotation annotation);
 
     void logCode(final Code code);
 
