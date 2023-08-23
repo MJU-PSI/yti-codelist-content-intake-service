@@ -10,13 +10,13 @@ import fi.vm.yti.codelist.common.dto.CodeSchemeDTO;
 import fi.vm.yti.codelist.common.dto.ExternalReferenceDTO;
 import fi.vm.yti.codelist.common.dto.PropertyTypeDTO;
 import fi.vm.yti.codelist.common.dto.ValueTypeDTO;
+import fi.vm.yti.codelist.intake.configuration.CodelistProperties;
 import fi.vm.yti.codelist.intake.configuration.CommentsProperties;
 import fi.vm.yti.codelist.intake.configuration.ContentIntakeServiceProperties;
 import fi.vm.yti.codelist.intake.configuration.DataModelProperties;
 import fi.vm.yti.codelist.intake.configuration.FrontendProperties;
 import fi.vm.yti.codelist.intake.configuration.GroupManagementProperties;
 import fi.vm.yti.codelist.intake.configuration.MessagingProperties;
-import fi.vm.yti.codelist.intake.configuration.PublicApiServiceProperties;
 import fi.vm.yti.codelist.intake.configuration.TerminologyProperties;
 import fi.vm.yti.codelist.intake.configuration.UriProperties;
 import fi.vm.yti.codelist.intake.model.Code;
@@ -35,8 +35,8 @@ public class ApiUtils {
 
     private final String DEFAULT_URI_HOST = "uri.suomi.fi";
 
-    private final PublicApiServiceProperties publicApiServiceProperties;
     private final UriProperties uriProperties;
+    private final CodelistProperties codelistProperties;
     private final ContentIntakeServiceProperties contentIntakeServiceProperties;
     private final GroupManagementProperties groupManagementProperties;
     private final TerminologyProperties terminologyProperties;
@@ -46,7 +46,7 @@ public class ApiUtils {
     private final MessagingProperties messagingProperties;
 
     @Inject
-    public ApiUtils(final PublicApiServiceProperties publicApiServiceProperties,
+    public ApiUtils(final CodelistProperties codelistProperties,
                     final ContentIntakeServiceProperties contentIntakeServiceProperties,
                     final GroupManagementProperties groupManagementProperties,
                     final TerminologyProperties terminologyProperties,
@@ -55,8 +55,8 @@ public class ApiUtils {
                     final CommentsProperties commentsProperties,
                     final FrontendProperties frontendProperties,
                     final MessagingProperties messagingProperties) {
-        this.publicApiServiceProperties = publicApiServiceProperties;
         this.uriProperties = uriProperties;
+        this.codelistProperties = codelistProperties;
         this.contentIntakeServiceProperties = contentIntakeServiceProperties;
         this.groupManagementProperties = groupManagementProperties;
         this.terminologyProperties = terminologyProperties;
@@ -72,13 +72,9 @@ public class ApiUtils {
 
     private String createResourceUrl(final String apiPath,
                                      final String resourceId) {
-        final String port = publicApiServiceProperties.getPort();
         final StringBuilder builder = new StringBuilder();
-        builder.append(publicApiServiceProperties.getScheme());
-        builder.append("://");
-        builder.append(publicApiServiceProperties.getHost());
-        appendPortToUrlIfNotEmpty(port, builder);
-        builder.append(publicApiServiceProperties.getContextPath());
+        builder.append(codelistProperties.getPublicUrl());
+        builder.append(API_CONTEXT_PATH_RESTAPI);
         builder.append(API_BASE_PATH);
         builder.append("/");
         builder.append(API_VERSION);

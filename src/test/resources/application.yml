@@ -31,6 +31,9 @@ datamodel:
 comments:
   publicUrl: https://kommentit.test.cloud.dvv.fi
 
+codelist:
+  publicUrl: http://localhost:9601
+
 messaging:
   enabled: false
 
@@ -63,12 +66,6 @@ application:
   port: 9602
   contextPath: /codelist-intake
   access-log: true
-
-publicapi:
-  scheme: http
-  host: localhost
-  port: 9601
-  contextPath: /codelist-api
 
 uri:
   scheme: http
