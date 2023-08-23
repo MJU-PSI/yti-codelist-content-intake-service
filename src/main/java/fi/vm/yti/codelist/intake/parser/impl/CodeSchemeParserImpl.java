@@ -219,6 +219,7 @@ public class CodeSchemeParserImpl extends AbstractBaseParser implements CodeSche
         Map<String, Integer> changeNoteHeaders = null;
         boolean firstRow = true;
         checkIfExcelEmpty(rowIterator);
+        checkExcelMaxRows(sheet);
         while (rowIterator.hasNext()) {
             final Row row = rowIterator.next();
             final String rowIdentifier = getRowIdentifier(row);

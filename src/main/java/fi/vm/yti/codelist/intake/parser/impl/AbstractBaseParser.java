@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -20,6 +21,7 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -48,6 +50,7 @@ import static fi.vm.yti.codelist.intake.exception.ErrorConstants.*;
 
 public abstract class AbstractBaseParser {
 
+    private static final int MAX_ROWS = 1048576;
     public static final String PUBLIC_ADMIN_SERVICE_REGISTRY = "mju";
     public static final String YTI_REGISTRY = "interoperabilityplatform";
     private static final Logger LOG = LoggerFactory.getLogger(AbstractBaseParser.class);
@@ -63,7 +66,7 @@ public abstract class AbstractBaseParser {
     public static void validateCodeCodeValue(final String codeValue,
                                              final String entityIdentifier) {
         if (codeValue == null || !codeValue.matches(CODE_CODEVALUE_VALIDATOR)) {
-            LOG.error(String.format("Error with code: %s", codeValue));
+            LOG.error(String.format("Error with code: %s", StringUtils.deleteWhitespace(codeValue)));
             if (entityIdentifier != null) {
                 throw new YtiCodeListException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_INVALID_CODE_CODEVALUE_WITH_IDENTIFIER, entityIdentifier));
             } else {
@@ -79,7 +82,7 @@ public abstract class AbstractBaseParser {
     public static void validateCodeValue(final String codeValue,
                                          final String entityIdentifier) {
         if (!codeValue.matches(CODESCHEME_CODEVALUE_VALIDATOR)) {
-            LOG.error(String.format("Error with code: %s", codeValue));
+            LOG.error(String.format("Error with code: %s", StringUtils.deleteWhitespace(codeValue)));
             if (entityIdentifier != null) {
                 throw new YtiCodeListException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_INVALID_CODEVALUE_WITH_IDENTIFIER, entityIdentifier));
             } else {
@@ -118,7 +121,7 @@ public abstract class AbstractBaseParser {
             try {
                 date = LocalDate.parse(dateString);
             } catch (final DateTimeParseException e) {
-                LOG.error(String.format("Parsing startDate failed from string: %s", dateString));
+                LOG.error(String.format("Parsing startDate failed from string: %s", StringUtils.deleteWhitespace(dateString)));
                 throw new CodeParsingException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(),
                     ERR_MSG_USER_ERRONEOUS_START_DATE, rowIdentifier));
             }
@@ -133,7 +136,7 @@ public abstract class AbstractBaseParser {
             try {
                 date = LocalDate.parse(dateString);
             } catch (final DateTimeParseException e) {
-                LOG.error(String.format("Parsing endDate failed from string: %s", dateString));
+                LOG.error(String.format("Parsing endDate failed from string: %s", StringUtils.deleteWhitespace(dateString)));
                 throw new CodeParsingException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(),
                     ERR_MSG_USER_ERRONEOUS_END_DATE, rowIdentifier));
             }
@@ -205,7 +208,7 @@ public abstract class AbstractBaseParser {
             final String value = cell.getStringCellValue();
             final Integer index = cell.getColumnIndex();
             if (headerMap.get(value) != null) {
-                LOG.error("Duplicate header " + value);
+                LOG.error("Duplicate header " + StringUtils.deleteWhitespace(value));
                 throw new YtiCodeListException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_USER_DUPLICATE_HEADER_VALUE_WITH_IDENTIFIER, value));
             }
             if (value != null && !value.trim().isEmpty()) {
@@ -218,7 +221,7 @@ public abstract class AbstractBaseParser {
     void checkForDuplicateCodeValueInImportData(final Set<String> values,
                                                 final String codeValue) {
         if (values.contains(codeValue.toLowerCase())) {
-            LOG.warn(String.format("Duplicate code: %s", codeValue));
+            LOG.warn(String.format("Duplicate code: %s", StringUtils.deleteWhitespace(codeValue)));
             throw new YtiCodeListException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_DUPLICATE_CODE_VALUE));
         }
     }
@@ -261,7 +264,7 @@ public abstract class AbstractBaseParser {
             try {
                 uuid = UUID.fromString(uuidString);
             } catch (final IllegalArgumentException e) {
-                LOG.error("UUID parsing failed from: " + uuidString, e);
+                LOG.error("UUID parsing failed from: " + StringUtils.deleteWhitespace(uuidString), e);
                 throw new YtiCodeListException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_INVALID_ID));
             }
         }
@@ -351,7 +354,7 @@ public abstract class AbstractBaseParser {
             try {
                 order = Integer.parseInt(orderString);
             } catch (final NumberFormatException e) {
-                LOG.error("Error parsing order from: " + orderString, e);
+                LOG.error("Error parsing order from: " + StringUtils.deleteWhitespace(orderString), e);
                 throw new CodeParsingException(new ErrorModel(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     ERR_MSG_USER_ORDER_INVALID_VALUE, rowIdentifier));
             }
@@ -368,7 +371,7 @@ public abstract class AbstractBaseParser {
             try {
                 sequenceId = Integer.parseInt(sequenceIdString);
             } catch (final NumberFormatException e) {
-                LOG.error("Error parsing sequenceId from: " + sequenceIdString, e);
+                LOG.error("Error parsing sequenceId from: " + StringUtils.deleteWhitespace(sequenceIdString), e);
                 throw new CodeParsingException(new ErrorModel(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     ERR_MSG_USER_MEMBER_ID_INVALID_VALUE, rowIdentifier));
             }
@@ -403,7 +406,7 @@ public abstract class AbstractBaseParser {
                 try {
                     uuid = UUID.fromString(trimWhiteSpaceFromString(externalReferenceIdentifier));
                 } catch (final Exception e) {
-                    // Nothing on purpose
+                    LOG.debug("Exception constructing UUID: " + e.getMessage());
                 }
                 if (uuid != null) {
                     externalReference.setId(uuid);
@@ -451,6 +454,12 @@ public abstract class AbstractBaseParser {
     void checkIfExcelEmpty(final Iterator<Row> rowIterator) {
         if (!rowIterator.hasNext()) {
             throw new YtiCodeListException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_USER_EMPTY_EXCEL));
+        }
+    }
+
+    void checkExcelMaxRows(final Sheet sheet) {
+        if (sheet.getLastRowNum() > MAX_ROWS) {
+            throw new YtiCodeListException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), ERR_MSG_USER_ROWS_EXCEL));
         }
     }
 
@@ -523,9 +532,8 @@ public abstract class AbstractBaseParser {
                     }
                 }
             } catch (Exception e) {
-                LOG.error(String.format("Parsing " + theContentHeader + " failed from non-string Cell with contents: %s", cell.getDateCellValue().toString()));
-                throw new CodeParsingException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(),
-                    theErrorMessage, rowIdentifier));
+                LOG.error(String.format("Parsing %s failed from non-string Cell with contents: %s", StringUtils.deleteWhitespace(theContentHeader), StringUtils.deleteWhitespace(cell.getDateCellValue().toString())));
+                throw new CodeParsingException(new ErrorModel(HttpStatus.NOT_ACCEPTABLE.value(), theErrorMessage, rowIdentifier));
             }
         }
     }

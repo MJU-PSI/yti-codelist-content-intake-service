@@ -134,6 +134,7 @@ public class PropertyTypeParserImpl extends AbstractBaseParser implements Proper
             Map<String, Integer> definitionHeaders = null;
             boolean firstRow = true;
             checkIfExcelEmpty(rowIterator);
+            checkExcelMaxRows(sheet);
             while (rowIterator.hasNext()) {
                 final Row row = rowIterator.next();
                 if (firstRow) {

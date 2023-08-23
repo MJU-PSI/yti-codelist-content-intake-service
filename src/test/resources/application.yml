@@ -45,11 +45,9 @@ hikari:
   minimumIdle: 10
   maximumPoolSize: 300
 
-yti_codelist_content_intake_service_elastic_host: ${environment.elastic.host}
-yti_codelist_content_intake_service_elastic_port: ${testelasticsearch.http.port}
-
 environment:
-  elastic:
+  elasticsearch:
+    scheme: http
     host: 127.0.0.1
     port: 9200
   postgres:
