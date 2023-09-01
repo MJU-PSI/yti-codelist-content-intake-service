@@ -27,8 +27,7 @@ public class Annotation extends AbstractIdentifyableTimestampedCode implements S
     private Map<String, String> prefLabel;
     private Map<String, String> description;
     private Set<CodeSchemeAnnotation> codeSchemeAnnotations;
-    //private Set<CodeScheme> codeSchemes;
-    // private Date contentModified;
+    private Set<CodeAnnotation> codeAnnotations;
 
     public Annotation() {
         prefLabel = new HashMap<>();
@@ -48,24 +47,6 @@ public class Annotation extends AbstractIdentifyableTimestampedCode implements S
     public void setCodeValue(final String codeValue) {
         this.codeValue = codeValue;
     }
-/* 
-    @Column(name = "content_modified")
-    @Temporal(TemporalType.TIMESTAMP)
-    public Date getContentModified() {
-        if (contentModified != null) {
-            return new Date(contentModified.getTime());
-        }
-        return null;
-    }
-
-    public void setContentModified(final Date contentModified) {
-        if (contentModified != null) {
-            this.contentModified = new Date(contentModified.getTime());
-        } else {
-            this.contentModified = null;
-        }
-    }
- */
 
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "annotation_preflabel", joinColumns = @JoinColumn(name = "annotation_id", referencedColumnName = "id"))
@@ -144,19 +125,14 @@ public class Annotation extends AbstractIdentifyableTimestampedCode implements S
     public void setCodeSchemeAnnotations(final Set<CodeSchemeAnnotation> codeSchemeAnnotations) {
         this.codeSchemeAnnotations = codeSchemeAnnotations;
     }
-/* 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "codescheme_annotation",
-        joinColumns = {
-            @JoinColumn(name = "annotation_id", referencedColumnName = "id", nullable = false, updatable = false) },
-        inverseJoinColumns = {
-            @JoinColumn(name = "codescheme_id", referencedColumnName = "id", nullable = false, updatable = false) })
-    public Set<CodeScheme> getCodeSchemes() {
-        return codeSchemes;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "annotation", cascade = CascadeType.ALL)
+    public Set<CodeAnnotation> getCodeAnnotations() {
+        return codeAnnotations;
     }
 
-    public void setCodeSchemes(final Set<CodeScheme> codeSchemes) {
-        this.codeSchemes = codeSchemes;
+    public void setCodeAnnotations(final Set<CodeAnnotation> codeAnnotations) {
+        this.codeAnnotations = codeAnnotations;
     }
- */
+
 }

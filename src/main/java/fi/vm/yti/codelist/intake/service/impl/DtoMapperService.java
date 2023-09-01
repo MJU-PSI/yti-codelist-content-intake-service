@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.vm.yti.codelist.common.dto.CodeSchemeAnnotationDTO;
 import fi.vm.yti.codelist.common.dto.AnnotationDTO;
+import fi.vm.yti.codelist.common.dto.CodeAnnotationDTO;
 import fi.vm.yti.codelist.common.dto.CodeDTO;
 import fi.vm.yti.codelist.common.dto.CodeRegistryDTO;
 import fi.vm.yti.codelist.common.dto.CodeSchemeDTO;
@@ -38,7 +39,9 @@ import fi.vm.yti.codelist.intake.model.Code;
 import fi.vm.yti.codelist.intake.model.CodeRegistry;
 import fi.vm.yti.codelist.intake.model.CodeScheme;
 import fi.vm.yti.codelist.intake.model.CodeSchemeAnnotation;
-import fi.vm.yti.codelist.intake.model.CodeSchemeAnnotationId;
+import fi.vm.yti.codelist.intake.model.CodeSchemeAnnotationDtoId;
+import fi.vm.yti.codelist.intake.model.CodeAnnotation;
+import fi.vm.yti.codelist.intake.model.CodeAnnotationDtoId;
 import fi.vm.yti.codelist.intake.model.Extension;
 import fi.vm.yti.codelist.intake.model.ExternalReference;
 import fi.vm.yti.codelist.intake.model.Member;
@@ -119,6 +122,9 @@ public class DtoMapperService {
         codeDto.setCreated(code.getCreated());
         codeDto.setModified(code.getModified());
         codeDto.setStatusModified(code.getStatusModified());
+        if (code.getCodeAnnotations() != null && !code.getCodeAnnotations().isEmpty()) {
+            codeDto.setCodeAnnotations(mapDeepCodeAnnotationDtos(code.getCodeAnnotations()));
+        }
         return codeDto;
     }
 
@@ -262,10 +268,10 @@ public class DtoMapperService {
         final Set<CodeSchemeAnnotationDTO> codeSchemeAnnotationDtos = new HashSet<>();
 
         if (codeSchemeAnnotations != null && !codeSchemeAnnotations.isEmpty()) {
-            Map<CodeSchemeAnnotationId, Map<String, String>> codeSchemeAnnotationMap = new HashMap<CodeSchemeAnnotationId, Map<String, String>>();
+            Map<CodeSchemeAnnotationDtoId, Map<String, String>> codeSchemeAnnotationMap = new HashMap<CodeSchemeAnnotationDtoId, Map<String, String>>();
 
             codeSchemeAnnotations.forEach(codeSchemeAnnotation -> {
-                CodeSchemeAnnotationId codeSchemeAnnotationId = new CodeSchemeAnnotationId(codeSchemeAnnotation.getCodeschemeId(), codeSchemeAnnotation.getAnnotationId());
+                CodeSchemeAnnotationDtoId codeSchemeAnnotationId = new CodeSchemeAnnotationDtoId(codeSchemeAnnotation.getCodeschemeId(), codeSchemeAnnotation.getAnnotationId());
                 if (codeSchemeAnnotationMap.containsKey(codeSchemeAnnotationId)) {
                     codeSchemeAnnotationMap.get(codeSchemeAnnotationId).put(codeSchemeAnnotation.getLanguage(), codeSchemeAnnotation.getValue());
                 } else {
@@ -275,7 +281,7 @@ public class DtoMapperService {
                 }
             });
 
-            for (Map.Entry<CodeSchemeAnnotationId, Map<String, String>> entry : codeSchemeAnnotationMap.entrySet()) {
+            for (Map.Entry<CodeSchemeAnnotationDtoId, Map<String, String>> entry : codeSchemeAnnotationMap.entrySet()) {
                 final CodeSchemeAnnotationDTO codeSchemeAnnotationDto = new CodeSchemeAnnotationDTO();
                 codeSchemeAnnotationDto.setCodeschemeId(entry.getKey().getCodeschemeId());
                 codeSchemeAnnotationDto.setAnnotationId(entry.getKey().getAnnotationId());
@@ -291,6 +297,46 @@ public class DtoMapperService {
         for (CodeSchemeAnnotation codeSchemeAnnotation : codeSchemeAnnotations) {
             if (codeSchemeAnnotation.getAnnotationId() == annotationId) {
                 return mapAnnotationDto(codeSchemeAnnotation.getAnnotation(), false);
+            }
+        }
+        return null;
+    }
+
+    @Transactional
+    public Set<CodeAnnotationDTO> mapDeepCodeAnnotationDtos(final Set<CodeAnnotation> codeAnnotations) {
+
+        final Set<CodeAnnotationDTO> codeAnnotationDtos = new HashSet<>();
+
+        if (codeAnnotations != null && !codeAnnotations.isEmpty()) {
+            Map<CodeAnnotationDtoId, Map<String, String>> codeAnnotationMap = new HashMap<CodeAnnotationDtoId, Map<String, String>>();
+
+            codeAnnotations.forEach(codeAnnotation -> {
+                CodeAnnotationDtoId codeAnnotationId = new CodeAnnotationDtoId(codeAnnotation.getCodeId(), codeAnnotation.getAnnotationId());
+                if (codeAnnotationMap.containsKey(codeAnnotationId)) {
+                    codeAnnotationMap.get(codeAnnotationId).put(codeAnnotation.getLanguage(), codeAnnotation.getValue());
+                } else {
+                    Map<String, String> languageMap = new HashMap<String, String>();
+                    languageMap.put(codeAnnotation.getLanguage(), codeAnnotation.getValue());
+                    codeAnnotationMap.put(codeAnnotationId, languageMap);
+                }
+            });
+
+            for (Map.Entry<CodeAnnotationDtoId, Map<String, String>> entry : codeAnnotationMap.entrySet()) {
+                final CodeAnnotationDTO codeAnnotationDto = new CodeAnnotationDTO();
+                codeAnnotationDto.setCodeId(entry.getKey().getCodeId());
+                codeAnnotationDto.setAnnotationId(entry.getKey().getAnnotationId());
+                codeAnnotationDto.setAnnotation(getAnnotationByIdFromCode(entry.getKey().getAnnotationId(), codeAnnotations));
+                codeAnnotationDto.setValue(entry.getValue());
+                codeAnnotationDtos.add(codeAnnotationDto);
+            }
+        }
+        return codeAnnotationDtos;
+    }
+
+    private AnnotationDTO getAnnotationByIdFromCode(final UUID annotationId, final Set<CodeAnnotation> codeAnnotations) {
+        for (CodeAnnotation codeAnnotation : codeAnnotations) {
+            if (codeAnnotation.getAnnotationId() == annotationId) {
+                return mapAnnotationDto(codeAnnotation.getAnnotation(), false);
             }
         }
         return null;

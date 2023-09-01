@@ -25,7 +25,6 @@ import fi.vm.yti.codelist.intake.model.Annotation;
 import fi.vm.yti.codelist.intake.model.Code;
 import fi.vm.yti.codelist.intake.model.CodeRegistry;
 import fi.vm.yti.codelist.intake.model.CodeScheme;
-import fi.vm.yti.codelist.intake.model.CodeSchemeAnnotation;
 import fi.vm.yti.codelist.intake.model.Extension;
 import fi.vm.yti.codelist.intake.model.ExternalReference;
 import fi.vm.yti.codelist.intake.model.Member;
@@ -41,7 +40,6 @@ public class EntityPayloadLoggerImpl implements EntityPayloadLogger {
     private static final String CODEREGISTRY = "CodeRegistry";
     private static final String CODESCHEME = "CodeScheme";
     private static final String ANNOTATION = "Annotation";
-    private static final String CODESCHEMEANNOTATION = "CodeSchemeAnnotation";
     private static final String CODE = "Code";
     private static final String EXTERNALREFERENCE = "ExternalReference";
     private static final String PROPERTYTYPE = "PropertyType";

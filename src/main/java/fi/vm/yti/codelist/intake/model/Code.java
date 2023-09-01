@@ -42,6 +42,7 @@ public class Code extends AbstractHistoricalCode implements Serializable {
     private String conceptUriInVocabularies;
     private CodeScheme subCodeScheme;
     private Date statusModified;
+    private Set<CodeAnnotation> codeAnnotations;
 
     @Column(name = "status_modified")
     @Temporal(TemporalType.TIMESTAMP)
@@ -253,5 +254,14 @@ public class Code extends AbstractHistoricalCode implements Serializable {
 
     public void setSubCodeScheme(final CodeScheme subCodeScheme) {
         this.subCodeScheme = subCodeScheme;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "code", cascade = CascadeType.ALL)
+    public Set<CodeAnnotation> getCodeAnnotations() {
+        return codeAnnotations;
+    }
+
+    public void setCodeAnnotations(final Set<CodeAnnotation> codeAnnotations) {
+        this.codeAnnotations = codeAnnotations;
     }
 }

@@ -18,7 +18,6 @@ import fi.vm.yti.codelist.intake.model.Annotation;
 import fi.vm.yti.codelist.intake.model.Code;
 import fi.vm.yti.codelist.intake.model.CodeRegistry;
 import fi.vm.yti.codelist.intake.model.CodeScheme;
-import fi.vm.yti.codelist.intake.model.CodeSchemeAnnotation;
 import fi.vm.yti.codelist.intake.model.Commit;
 import fi.vm.yti.codelist.intake.model.EditedEntity;
 import fi.vm.yti.codelist.intake.model.Extension;

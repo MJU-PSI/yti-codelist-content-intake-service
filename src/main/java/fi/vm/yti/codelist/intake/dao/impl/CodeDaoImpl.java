@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.vm.yti.codelist.common.dto.CodeAnnotationDTO;
 import fi.vm.yti.codelist.common.dto.CodeDTO;
 import fi.vm.yti.codelist.common.dto.CodeSchemeDTO;
 import fi.vm.yti.codelist.common.dto.ErrorModel;
@@ -31,11 +32,15 @@ import fi.vm.yti.codelist.intake.dao.ExternalReferenceDao;
 import fi.vm.yti.codelist.intake.dao.MemberDao;
 import fi.vm.yti.codelist.intake.exception.ExistingCodeException;
 import fi.vm.yti.codelist.intake.exception.YtiCodeListException;
+import fi.vm.yti.codelist.intake.jpa.AnnotationRepository;
+import fi.vm.yti.codelist.intake.jpa.CodeAnnotationRepository;
 import fi.vm.yti.codelist.intake.jpa.CodeRepository;
 import fi.vm.yti.codelist.intake.jpa.CodeSchemeRepository;
 import fi.vm.yti.codelist.intake.language.LanguageService;
 import fi.vm.yti.codelist.intake.log.EntityChangeLogger;
+import fi.vm.yti.codelist.intake.model.Annotation;
 import fi.vm.yti.codelist.intake.model.Code;
+import fi.vm.yti.codelist.intake.model.CodeAnnotation;
 import fi.vm.yti.codelist.intake.model.CodeScheme;
 import fi.vm.yti.codelist.intake.model.Extension;
 import fi.vm.yti.codelist.intake.model.ExternalReference;
@@ -60,6 +65,8 @@ public class CodeDaoImpl extends AbstractDao implements CodeDao {
     private final ExtensionDao extensionDao;
     private final MemberDao memberDao;
     private final CodeSchemeDao codeSchemeDao;
+    private final CodeAnnotationRepository codeAnnotationRepository;
+    private final AnnotationRepository annotationRepository;
 
     public CodeDaoImpl(final EntityChangeLogger entityChangeLogger,
                        final ApiUtils apiUtils,
@@ -70,7 +77,9 @@ public class CodeDaoImpl extends AbstractDao implements CodeDao {
                        final LanguageService languageService,
                        final CodeSchemeDao codeSchemeDao,
                        @Lazy final ExtensionDao extensionDao,
-                       @Lazy final MemberDao memberDao) {
+                       @Lazy final MemberDao memberDao,
+                       final CodeAnnotationRepository codeAnnotationRepository,
+                       final AnnotationRepository annotationRepository) {
         super(languageService);
         this.entityChangeLogger = entityChangeLogger;
         this.apiUtils = apiUtils;
@@ -81,6 +90,8 @@ public class CodeDaoImpl extends AbstractDao implements CodeDao {
         this.codeSchemeDao = codeSchemeDao;
         this.extensionDao = extensionDao;
         this.memberDao = memberDao;
+        this.codeAnnotationRepository = codeAnnotationRepository;
+        this.annotationRepository = annotationRepository;
     }
 
     @Transactional
@@ -135,72 +146,93 @@ public class CodeDaoImpl extends AbstractDao implements CodeDao {
 
     @Transactional
     public Set<Code> findAll(final PageRequest pageRequest) {
-        return new HashSet<>(codeRepository.findAll(pageRequest).getContent());
+        return setAnnotations(new HashSet<>(codeRepository.findAll(pageRequest).getContent()));
     }
 
     @Transactional
     public Set<Code> findAll() {
-        return codeRepository.findAll();
+        return setAnnotations(codeRepository.findAll());
+    }
+
+    private Set<Code> setAnnotations(final Set<Code> codes) {
+        if (codes != null && !codes.isEmpty()) {
+            for (Code code : codes) {
+                setAnnotation(code);
+            }
+        }
+        return codes;
+    }
+
+    private Code setAnnotation(final Code code) {
+        if (code != null && code.getCodeAnnotations() != null && !code.getCodeAnnotations().isEmpty()) {
+            for (CodeAnnotation codeAnnotation : code.getCodeAnnotations()) {
+                final Annotation annotation = annotationRepository.findById(codeAnnotation.getAnnotationId());
+                codeAnnotation.setAnnotation(annotation);
+            }
+        }
+        return code;
     }
 
     @Transactional
     public Code findByUri(final String uri) {
-        return codeRepository.findByUriIgnoreCase(uri);
+        return setAnnotation(codeRepository.findByUriIgnoreCase(uri));
     }
 
     @Transactional
     public Set<Code> findBySubCodeScheme(final CodeScheme subCodeScheme) {
-        return codeRepository.findBySubCodeScheme(subCodeScheme);
+        return setAnnotations(codeRepository.findBySubCodeScheme(subCodeScheme));
     }
 
     @Transactional
     public Code findByCodeSchemeAndCodeValue(final CodeScheme codeScheme,
                                              final String codeValue) {
-        return codeRepository.findByCodeSchemeAndCodeValueIgnoreCase(codeScheme, codeValue);
+        return setAnnotation(codeRepository.findByCodeSchemeAndCodeValueIgnoreCase(codeScheme, codeValue));
     }
 
     @Transactional
     public Code findByCodeSchemeAndCodeValueAndBroaderCodeId(final CodeScheme codeScheme,
                                                              final String codeValue,
                                                              final UUID broaderCodeId) {
-        return codeRepository.findByCodeSchemeAndCodeValueIgnoreCaseAndBroaderCodeId(codeScheme, codeValue, broaderCodeId);
+        return setAnnotation(codeRepository.findByCodeSchemeAndCodeValueIgnoreCaseAndBroaderCodeId(codeScheme, codeValue, broaderCodeId));
     }
 
     @Transactional
     public Code findById(UUID id) {
-        return codeRepository.findById(id);
+        return setAnnotation(codeRepository.findById(id));
     }
 
     @Transactional
     public Set<Code> findByCodeSchemeAndStatus(final CodeScheme codeScheme,
                                                final String status) {
-        return codeRepository.findByCodeSchemeAndStatus(codeScheme, status);
+        return setAnnotations(codeRepository.findByCodeSchemeAndStatus(codeScheme, status));
     }
 
     @Transactional
     public Set<Code> findByCodeSchemeId(final UUID codeSchemeId) {
-        return codeRepository.findByCodeSchemeId(codeSchemeId);
+        return setAnnotations(codeRepository.findByCodeSchemeId(codeSchemeId));
     }
 
     @Transactional
     public Set<Code> findByCodeSchemeIdAndBroaderCodeIdIsNull(final UUID codeSchemeId) {
-        return codeRepository.findByCodeSchemeIdAndBroaderCodeIdIsNull(codeSchemeId);
+        return setAnnotations(codeRepository.findByCodeSchemeIdAndBroaderCodeIdIsNull(codeSchemeId));
     }
 
     @Transactional
     public Set<Code> findByBroaderCodeId(final UUID broaderCodeId) {
-        return codeRepository.findByBroaderCodeId(broaderCodeId);
+        return setAnnotations(codeRepository.findByBroaderCodeId(broaderCodeId));
     }
 
     @Transactional
     public Set<Code> updateCodeFromDto(final CodeScheme codeScheme,
                                        final CodeDTO codeDto) {
+        
+        final Set<Code> codeSchemeCodes = findByCodeSchemeId(codeScheme.getId());
         final Code code = createOrUpdateCode(codeScheme, codeDto, null, null, null);
         updateExternalReferences(codeScheme, code, codeDto);
         checkCodeHierarchyLevels(code);
         final Set<Code> codesAffected = new HashSet<>();
         codesAffected.add(code);
-        evaluateAndSetHierarchyLevels(codesAffected, findByCodeSchemeId(codeScheme.getId()));
+        evaluateAndSetHierarchyLevels(codesAffected, codeSchemeCodes);
         save(code);
         codeDto.setId(code.getId());
         setCodeExtensionMemberValues(codeDto);
@@ -354,6 +386,11 @@ public class CodeDaoImpl extends AbstractDao implements CodeDao {
                             final CodeDTO fromCode,
                             final Set<Code> codes,
                             final MutableInt nextOrder) {
+        final Set<CodeAnnotation> exsistingCodeAnnotations = codeAnnotationRepository.findByCodeId(existingCode.getId());
+        for (final CodeAnnotation exsistingCodeAnnot : exsistingCodeAnnotations) {
+            codeAnnotationRepository.delete(exsistingCodeAnnot);
+        }
+
         final Date timeStamp = new Date(System.currentTimeMillis());
         final String uri = apiUtils.createCodeUri(codeScheme.getCodeRegistry(), codeScheme, existingCode);
         if (!Objects.equals(existingCode.getStatus(), fromCode.getStatus())) {
@@ -418,6 +455,7 @@ public class CodeDaoImpl extends AbstractDao implements CodeDao {
             existingCode.setConceptUriInVocabularies(fromCode.getConceptUriInVocabularies());
         }
         existingCode.setModified(timeStamp);
+        existingCode.setCodeAnnotations(resolveCodeAnnotationFromDtos(fromCode.getCodeAnnotations()));
         return existingCode;
     }
 
@@ -475,7 +513,42 @@ public class CodeDaoImpl extends AbstractDao implements CodeDao {
         code.setConceptUriInVocabularies(fromCode.getConceptUriInVocabularies());
         code.setCreated(timeStamp);
         code.setModified(timeStamp);
+        if (fromCode.getCodeAnnotations() != null) {
+            for (final CodeAnnotationDTO codeAnnot : fromCode.getCodeAnnotations()) {
+                codeAnnot.setCodeId(code.getId());
+            }
+        }
+        code.setCodeAnnotations(resolveCodeAnnotationFromDtos(fromCode.getCodeAnnotations()));
         return code;
+    }
+
+    private Set<CodeAnnotation> resolveCodeAnnotationFromDtos(final Set<CodeAnnotationDTO> codeAnnotationDtos) {
+        final Set<CodeAnnotation> codeAnnotations = new HashSet<>();
+        if (codeAnnotationDtos != null && !codeAnnotationDtos.isEmpty()) {
+            codeAnnotationDtos.forEach(codeAnnotationDto -> {
+                for (Map.Entry<String, String> entry : codeAnnotationDto.getValue().entrySet()) {
+                    final CodeAnnotation exsistingCodeAnnotation = codeAnnotationRepository.findByCodeIdAndAnnotationIdAndLanguage(codeAnnotationDto.getCodeId(), codeAnnotationDto.getAnnotationId(), entry.getKey());
+                    if (exsistingCodeAnnotation != null) {
+                        exsistingCodeAnnotation.setAnnotation(getAnnotationFromId(codeAnnotationDto.getAnnotationId()));
+                        exsistingCodeAnnotation.setValue(entry.getValue());
+                        codeAnnotations.add(exsistingCodeAnnotation);
+                    } else {
+                        final CodeAnnotation codeAnnotation = new CodeAnnotation();
+                        codeAnnotation.setAnnotationId(codeAnnotationDto.getAnnotationId());
+                        codeAnnotation.setCodeId(codeAnnotationDto.getCodeId());
+                        codeAnnotation.setAnnotation(getAnnotationFromId(codeAnnotationDto.getAnnotationId()));
+                        codeAnnotation.setLanguage(entry.getKey());
+                        codeAnnotation.setValue(entry.getValue());
+                        codeAnnotations.add(codeAnnotation);
+                    }
+                }
+            });
+        }
+        return codeAnnotations;
+    }
+
+    private Annotation getAnnotationFromId(final UUID annotationId) {
+        return annotationRepository.findById(annotationId);
     }
 
     private String resolveSubCodeSchemeIdentifier(final CodeSchemeDTO subCodeScheme) {

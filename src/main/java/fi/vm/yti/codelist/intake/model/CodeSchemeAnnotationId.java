@@ -11,6 +11,8 @@ public class CodeSchemeAnnotationId implements Serializable {
 
     private UUID annotationId;
 
+    private String language;
+
     @Column(name = "codescheme_id")
     public UUID getCodeschemeId() {
         return codeschemeId;
@@ -29,11 +31,26 @@ public class CodeSchemeAnnotationId implements Serializable {
         this.annotationId = annotationId;
     }
 
+    @Column(name = "language")
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(final String language) {
+        this.language = language;
+    }
+
     public CodeSchemeAnnotationId() { }
 
     public CodeSchemeAnnotationId(UUID codeschemeId, UUID annotationId) {
         this.codeschemeId = codeschemeId;
         this.annotationId = annotationId;
+    }
+
+    public CodeSchemeAnnotationId(UUID codeschemeId, UUID annotationId, String language) {
+        this.codeschemeId = codeschemeId;
+        this.annotationId = annotationId;
+        this.language = language;
     }
 
     @Override
@@ -45,7 +62,7 @@ public class CodeSchemeAnnotationId implements Serializable {
     public boolean equals(Object object) {
         if (object instanceof CodeSchemeAnnotationId) {
             CodeSchemeAnnotationId otherId = (CodeSchemeAnnotationId) object;
-            return (otherId.codeschemeId == this.codeschemeId) && (otherId.annotationId == this.annotationId);
+            return otherId.codeschemeId.equals(this.codeschemeId) && otherId.annotationId.equals(this.annotationId) && otherId.language.equals(this.language);
         }
         return false;
     }

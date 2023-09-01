@@ -57,7 +57,6 @@ public class CodeScheme extends AbstractHistoricalCode implements Serializable {
     private Map<String, String> feedbackChannel;
     private Date contentModified;
     private Date statusModified;
-    //private Set<Annotation> annotations;
     private Set<CodeSchemeAnnotation> codeSchemeAnnotations;
 
     public CodeScheme() {
