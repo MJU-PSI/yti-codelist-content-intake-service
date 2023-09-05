@@ -67,11 +67,11 @@ public class YtiDataAccess {
 
     private static final String SERVICE_CLASSIFICATION_P9 = "P9"; // classification = information domain
 
-    private static final String DEFAULT_IDENTIFIER = "default";
+    private static final String DEFAULT_IDENTIFIER = "v1";
     private static final String MIGRATION_URIS_VERSION = "v4";
     private static final String MIGRATION_LANGUAGECODES_VERSION = "v1";
-    private static final String PROPERTYTYPE_IDENTIFIER = "v18";
-    private static final String VALUETYPE_IDENTIFIER = "v9";
+    private static final String PROPERTYTYPE_IDENTIFIER = "v20";
+    private static final String VALUETYPE_IDENTIFIER = "v10";
 
     private final ContentIntakeServiceProperties contentIntakeServiceProperties;
     private final UpdateManager updateManager;
