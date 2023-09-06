@@ -51,8 +51,7 @@ import static fi.vm.yti.codelist.intake.exception.ErrorConstants.*;
 public abstract class AbstractBaseParser {
 
     private static final int MAX_ROWS = 1048576;
-    public static final String PUBLIC_ADMIN_SERVICE_REGISTRY = "mju";
-    public static final String YTI_REGISTRY = "interoperabilityplatform";
+    public static final String PUBLIC_ADMIN_SERVICE_REGISTRY = "prs";
     private static final Logger LOG = LoggerFactory.getLogger(AbstractBaseParser.class);
     private static final String CODE_CODEVALUE_VALIDATOR = "^[a-zA-Z0-9_\\-\\.\\+\\&\\#\\*]*$";
     private static final String CODESCHEME_CODEVALUE_VALIDATOR = "^[a-zA-Z0-9_\\-]*$";

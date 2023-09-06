@@ -19,7 +19,7 @@ public interface AbstractBaseService {
     }
 
     default boolean isLanguageCodeCodeScheme(final CodeScheme codeScheme) {
-        return isCodeSchemeWithRegistryAndCodeValue(codeScheme, YTI_REGISTRY, ApplicationConstants.YTI_LANGUAGECODE_CODESCHEME);
+        return isCodeSchemeWithRegistryAndCodeValue(codeScheme, PUBLIC_ADMIN_SERVICE_REGISTRY, ApplicationConstants.YTI_LANGUAGECODE_CODESCHEME);
     }
 
     default boolean isCodeSchemeWithRegistryAndCodeValue(final CodeScheme codeScheme,

@@ -62,8 +62,7 @@ public class YtiDataAccess {
     private static final String MIGRATION_URIS = "urimigration";
     private static final String MIGRATION_LANGUAGECODES = "languagecodemigration";
 
-    private static final String DEFAULT_CLASSIFICATIONREGISTRY_FILENAME = "classificationregistries.csv"; // classification = information domain
-    private static final String DEFAULT_INTEROPERABILITYREGISTRY_FILENAME = "interoperabilityplatformregistries.csv";
+    private static final String DEFAULT_REGISTRY_FILENAME = "registries.csv";
 
     private static final String SERVICE_CLASSIFICATION_P9 = "P9"; // classification = information domain
 
@@ -148,9 +147,8 @@ public class YtiDataAccess {
         loadDefaultValueTypes();
         loadDefaultPropertyTypes();
         loadDefaultExternalReferences();
-        loadRegistryContent(DEFAULT_CLASSIFICATIONREGISTRY_FILENAME, "V2_CLASSIFICATION");
+        loadRegistryContent(DEFAULT_REGISTRY_FILENAME, "V1_REGISTRY");
         classifyServiceClassification();
-        loadRegistryContent(DEFAULT_INTEROPERABILITYREGISTRY_FILENAME, "V3_INTEROPERABILITY");
         languageService.loadLanguageCodes();
         setLanguageCodesToEarlierCodeSchemes();
         rewriteAllUris();

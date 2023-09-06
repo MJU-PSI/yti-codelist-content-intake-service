@@ -19,7 +19,7 @@ import fi.vm.yti.codelist.intake.model.Code;
 import fi.vm.yti.codelist.intake.model.CodeScheme;
 import static fi.vm.yti.codelist.intake.configuration.ApplicationConstants.YTI_LANGUAGECODE_CODESCHEME;
 import static fi.vm.yti.codelist.intake.exception.ErrorConstants.ERR_MSG_USER_BAD_LANGUAGECODE;
-import static fi.vm.yti.codelist.intake.parser.impl.AbstractBaseParser.YTI_REGISTRY;
+import static fi.vm.yti.codelist.intake.parser.impl.AbstractBaseParser.PUBLIC_ADMIN_SERVICE_REGISTRY;
 
 @Component
 public class LanguageService {
@@ -41,7 +41,7 @@ public class LanguageService {
 
     @Transactional
     public void loadLanguageCodes() {
-        final CodeScheme languageCodeScheme = codeSchemeDao.findByCodeRegistryCodeValueAndCodeValue(YTI_REGISTRY, YTI_LANGUAGECODE_CODESCHEME);
+        final CodeScheme languageCodeScheme = codeSchemeDao.findByCodeRegistryCodeValueAndCodeValue(PUBLIC_ADMIN_SERVICE_REGISTRY, YTI_LANGUAGECODE_CODESCHEME);
         if (languageCodeScheme != null) {
             final Set<Code> codes = codeDao.findByCodeSchemeId(languageCodeScheme.getId());
             if (codes == null || codes.isEmpty()) {

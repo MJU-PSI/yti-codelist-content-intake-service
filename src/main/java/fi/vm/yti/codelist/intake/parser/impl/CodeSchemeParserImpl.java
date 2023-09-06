@@ -151,7 +151,7 @@ public class CodeSchemeParserImpl extends AbstractBaseParser implements CodeSche
                 if (!codeValue.equals(ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME) && !codeRegistry.getCodeValue().equals(PUBLIC_ADMIN_SERVICE_REGISTRY)) {
                     codeScheme.setInfoDomains(resolveInfoDomainsFromString(parseStringFromCsvRecord(record, CONTENT_HEADER_INFODOMAIN)));
                 }
-                if ((!codeValue.equals(ApplicationConstants.YTI_LANGUAGECODE_CODESCHEME) && !codeRegistry.getCodeValue().equals(YTI_REGISTRY)) &&
+                if ((!codeValue.equals(ApplicationConstants.YTI_LANGUAGECODE_CODESCHEME) && !codeRegistry.getCodeValue().equals(PUBLIC_ADMIN_SERVICE_REGISTRY)) &&
                     (!codeValue.equals(ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME) && !codeRegistry.getCodeValue().equals(PUBLIC_ADMIN_SERVICE_REGISTRY)) &&
                     headerMap.get(CONTENT_HEADER_LANGUAGECODE) != null) {
                     final Set<CodeDTO> languageCodes = resolveLanguageCodesFromString(parseStringFromCsvRecord(record, CONTENT_HEADER_LANGUAGECODE));
@@ -250,7 +250,7 @@ public class CodeSchemeParserImpl extends AbstractBaseParser implements CodeSche
                 if (!codeValue.equals(ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME) && !codeRegistry.getCodeValue().equals(PUBLIC_ADMIN_SERVICE_REGISTRY)) {
                     codeScheme.setInfoDomains(resolveInfoDomainsFromString(formatter.formatCellValue(row.getCell(headerMap.get(CONTENT_HEADER_INFODOMAIN)))));
                 }
-                if ((!codeValue.equals(ApplicationConstants.YTI_LANGUAGECODE_CODESCHEME) && !codeRegistry.getCodeValue().equals(YTI_REGISTRY)) &&
+                if ((!codeValue.equals(ApplicationConstants.YTI_LANGUAGECODE_CODESCHEME) && !codeRegistry.getCodeValue().equals(PUBLIC_ADMIN_SERVICE_REGISTRY)) &&
                     (!codeValue.equals(ApplicationConstants.YTI_DATACLASSIFICATION_INFODOMAIN_CODESCHEME) && !codeRegistry.getCodeValue().equals(PUBLIC_ADMIN_SERVICE_REGISTRY)) &&
                     headerMap.get(CONTENT_HEADER_LANGUAGECODE) != null) {
                     final Set<CodeDTO> languageCodes = resolveLanguageCodesFromString(formatter.formatCellValue(row.getCell(headerMap.get(CONTENT_HEADER_LANGUAGECODE))));
