@@ -55,6 +55,6 @@ public class UriProperties {
     }
 
     public String getUriHostPathAddress() {
-        return scheme + "://" + host + getContextPath();
+        return this.scheme + "://" + this.host + this.contextPath;
     }
 }

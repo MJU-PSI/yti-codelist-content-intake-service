@@ -67,10 +67,5 @@ application:
   contextPath: /codelist-intake
   access-log: true
 
-uri:
-  scheme: http
-  host: iow.gora.si
-  contextPath: /codelist
-
 session:
   timeout-mins: 10

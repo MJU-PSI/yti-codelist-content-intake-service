@@ -356,8 +356,8 @@ public class YtiDataAccess {
             rewriteCodeUris();
             rewriteExtensionUris();
             rewriteMemberUris();
-            rewriteValueTypeUris();
-            rewritePropertyTypeUris();
+            //rewriteValueTypeUris();
+            //rewritePropertyTypeUris();
             if (updateStatus.getStatus().equals(UpdateManager.UPDATE_RUNNING)) {
                 updateManager.updateSuccessStatus(updateStatus);
             }
