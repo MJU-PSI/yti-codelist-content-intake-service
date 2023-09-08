@@ -1,1 +1,1 @@
-ALTER TABLE public.codescheme ADD vocabularies_uri text NULL;
+ALTER TABLE codescheme ADD vocabularies_uri text NULL;

@@ -1,1 +1,1 @@
-ALTER TABLE public.codescheme ADD variant_codescheme_id uuid NULL;
+ALTER TABLE codescheme ADD variant_codescheme_id uuid NULL;

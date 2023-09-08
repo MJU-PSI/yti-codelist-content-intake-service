@@ -1,6 +1,6 @@
 -- annotation definition
 
-CREATE TABLE public.annotation (
+CREATE TABLE annotation (
 	id uuid NOT NULL,
 	codevalue text NOT NULL,
 	created timestamp NULL,

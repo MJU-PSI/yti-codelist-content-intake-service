@@ -1,1 +1,1 @@
-ALTER TABLE public.code ADD vocabularies_uri text NULL;
+ALTER TABLE code ADD vocabularies_uri text NULL;
